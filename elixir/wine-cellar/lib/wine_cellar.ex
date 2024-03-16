@@ -22,9 +22,7 @@ defmodule WineCellar do
   end
 
   def filter(cellar, color, _opts) do
-    cellar
-    |> Keyword.filter(fn {k, _v} -> k == color end)
-    |> Keyword.values()
+    cellar |> Keyword.get_values(color)
   end
 
   # The functions below do not need to be modified.
