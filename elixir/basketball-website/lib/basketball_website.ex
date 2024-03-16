@@ -3,7 +3,7 @@ defmodule BasketballWebsite do
     path
     |> parse_path!()
     |> Enum.reduce_while(data, fn key, data ->
-      case data |> Map.get(key) do
+      case data[key] do
         nil -> {:halt, nil}
         value -> {:cont, value}
       end
