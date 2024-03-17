@@ -8,8 +8,14 @@ defmodule RPNCalculator.Exception do
     defexception message: @default_msg
 
     @impl Exception
-    def message(%{message: @default_msg}), do: @default_msg
-    def message(%{message: ctx}), do: "stack underflow occurred, context: " <> ctx
+    def exception([]) do
+      %__MODULE__{}
+    end
+
+    @impl Exception
+    def exception(ctx) when is_binary(ctx) do
+      %__MODULE__{message: "stack underflow occurred, context: " <> ctx}
+    end
   end
 
   def divide([0, _dividend]) do
