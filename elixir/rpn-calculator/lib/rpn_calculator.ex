@@ -1,13 +1,21 @@
 defmodule RPNCalculator do
   def calculate!(stack, operation) do
-    # Please implement the calculate!/2 function
+    stack |> operation.()
   end
 
   def calculate(stack, operation) do
-    # Please implement the calculate/2 function
+    try do
+      {:ok, stack |> operation.()}
+    rescue
+      _e -> :error
+    end
   end
 
   def calculate_verbose(stack, operation) do
-    # Please implement the calculate_verbose/2 function
+    try do
+      {:ok, stack |> operation.()}
+    rescue
+      e -> {:error, e.message}
+    end
   end
 end
