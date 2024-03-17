@@ -6,7 +6,15 @@ defmodule CaptainsLog do
   end
 
   def random_ship_registry_number() do
-    ["NCC", 1000..1999 |> Enum.random()] |> Enum.join("-")
+    1000..1999
+    |> Enum.random()
+    |> format("NCC-~B")
+  end
+
+  defp format(value, format) do
+    format
+    |> :io_lib.format([value])
+    |> to_string()
   end
 
   def random_stardate() do
@@ -14,9 +22,7 @@ defmodule CaptainsLog do
   end
 
   def format_stardate(stardate) when is_float(stardate) do
-    stardate
-    |> Float.round(1)
-    |> to_string()
+    stardate |> format("~.1f")
   end
 
   def format_stardate(_stardate) do
