@@ -27,5 +27,7 @@ defmodule Newsletter do
         pid |> log_sent_email(email)
       end
     end)
+
+    pid |> close_log()
   end
 end
