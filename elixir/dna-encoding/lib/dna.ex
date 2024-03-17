@@ -11,16 +11,9 @@ defmodule DNA do
   def decode_nucleotide(0b0100), do: ?G
   def decode_nucleotide(0b1000), do: ?T
 
-  def encode(dna) do
-    dna
-    |> Enum.map(&encode_nucleotide/1)
-    |> Enum.map(&<<&1::4>>)
-    |> Enum.reduce(&<<&2::bitstring, &1::bitstring>>)
-  end
+  def encode([]), do: <<>>
+  def encode([head | tail]), do: <<encode_nucleotide(head)::4, encode(tail)::bitstring>>
 
-  def decode(dna) do
-    for <<code::4 <- dna>> do
-      decode_nucleotide(code)
-    end
-  end
+  def decode(<<>>), do: []
+  def decode(<<code::4, rest::bitstring>>), do: [decode_nucleotide(code) | decode(rest)]
 end
