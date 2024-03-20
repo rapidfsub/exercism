@@ -163,52 +163,52 @@ defmodule FrequencyTest do
     assert freq([]) == %{}
   end
 
-  @tag :pending
+  # @tag :pending
   test "one text with one letter" do
     assert freq(["a"]) == %{"a" => 1}
   end
 
-  @tag :pending
+  # @tag :pending
   test "one text with multiple letters" do
     assert freq(["bbcccd"]) == %{"b" => 2, "c" => 3, "d" => 1}
   end
 
-  @tag :pending
+  # @tag :pending
   test "two texts with one letter" do
     assert freq(["e", "f"]) == %{"e" => 1, "f" => 1}
   end
 
-  @tag :pending
+  # @tag :pending
   test "two texts with multiple letters" do
     assert freq(["ggh", "hhi"]) == %{"g" => 2, "h" => 3, "i" => 1}
   end
 
-  @tag :pending
+  # @tag :pending
   test "ignore letter casing" do
     assert freq(["m", "M"]) == %{"m" => 2}
   end
 
-  @tag :pending
+  # @tag :pending
   test "ignore whitespace" do
     assert freq(["   ", "\t", "\r\n"]) == %{}
   end
 
-  @tag :pending
+  # @tag :pending
   test "ignore punctuation" do
     assert freq(["!", "?", ";", ",", "."]) == %{}
   end
 
-  @tag :pending
+  # @tag :pending
   test "ignore numbers" do
     assert freq(["1", "2", "3", "4", "5", "6", "7", "8", "9"]) == %{}
   end
 
-  @tag :pending
+  # @tag :pending
   test "Unicode letters" do
     assert freq(["本", "φ", "ほ", "ø"]) == %{"本" => 1, "φ" => 1, "ほ" => 1, "ø" => 1}
   end
 
-  @tag :pending
+  # @tag :pending
   test "combination of lower- and uppercase letters, punctuation and white space" do
     assert freq(@tolkien) == %{
              "a" => 32,
@@ -236,7 +236,7 @@ defmodule FrequencyTest do
            }
   end
 
-  @tag :pending
+  # @tag :pending
   test "large texts" do
     assert freq(@dostoevsky, 2) == %{
              "a" => 845,
@@ -267,7 +267,7 @@ defmodule FrequencyTest do
            }
   end
 
-  @tag :pending
+  # @tag :pending
   test "many small texts" do
     assert freq(List.duplicate("abbccc", 50), 10) == %{"a" => 50, "b" => 100, "c" => 150}
   end
