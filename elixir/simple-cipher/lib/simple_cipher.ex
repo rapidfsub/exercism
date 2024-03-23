@@ -1,4 +1,6 @@
 defmodule SimpleCipher do
+  @alpha_len Enum.count(?a..?z)
+
   @doc """
   Given a `plaintext` and `key`, encode each character of the `plaintext` by
   shifting it by the corresponding letter in the alphabet shifted by the number
@@ -30,7 +32,34 @@ defmodule SimpleCipher do
   "abcabca". If the key is longer than the text, only use as many letters of it
   as are necessary.
   """
+
   def encode(plaintext, key) do
+    plaintext |> substitute(key, &+/2)
+  end
+
+  defp substitute(text, key, fun) do
+    key
+    |> String.graphemes()
+    |> Stream.cycle()
+    |> Enum.zip(text |> String.graphemes())
+    |> Enum.map(fn {key, letter} ->
+      letter
+      |> to_code()
+      |> fun.(key |> to_code())
+      |> to_letter()
+    end)
+    |> to_string()
+  end
+
+  defp to_code(<<code>>) when code in ?a..?z do
+    code - ?a
+  end
+
+  defp to_letter(code) when is_integer(code) do
+    case code |> rem(@alpha_len) do
+      code when code < 0 -> code + @alpha_len
+      code -> code
+    end + ?a
   end
 
   @doc """
@@ -44,11 +73,15 @@ defmodule SimpleCipher do
   etc..., depending on how much you shift the alphabet.
   """
   def decode(ciphertext, key) do
+    ciphertext |> substitute(key, &-/2)
   end
 
   @doc """
   Generate a random key of a given length. It should contain lowercase letters only.
   """
   def generate_key(length) do
+    Stream.repeatedly(fn -> Enum.random(?a..?z) end)
+    |> Enum.take(length)
+    |> to_string()
   end
 end
