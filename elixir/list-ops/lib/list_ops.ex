@@ -47,10 +47,7 @@ defmodule ListOps do
   def foldr([h | t], acc, f), do: h |> f.(t |> foldr(acc, f))
 
   @spec append(list, list) :: list
-  def append(a, b), do: a |> do_append(b, [])
-  defp do_append([h | t], b, acc), do: t |> do_append(b, [h | acc])
-  defp do_append([], [h | t], acc), do: [] |> do_append(t, [h | acc])
-  defp do_append([], [], acc), do: acc |> reverse()
+  def append(a, b), do: [a, b] |> concat()
 
   @spec concat([[any]]) :: [any]
   def concat(ll), do: ll |> do_concat([])
