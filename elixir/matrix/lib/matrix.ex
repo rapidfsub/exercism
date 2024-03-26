@@ -1,5 +1,5 @@
 defmodule Matrix do
-  @enforce_keys [:rs, :cs, :values]
+  @enforce_keys [:row_len, :col_len, :values]
   defstruct @enforce_keys
 
   @doc """
@@ -15,15 +15,8 @@ defmodule Matrix do
         end
       end
 
-    rs =
-      for {_, r} <- rows |> Enum.with_index(1) do
-        r
-      end
-
-    cs =
-      for {_, c} <- rows |> hd() |> Enum.with_index(1) do
-        c
-      end
+    row_len = rows |> length()
+    col_len = rows |> hd() |> length()
 
     values =
       for {row, r} <- rows |> Enum.with_index(1),
@@ -32,7 +25,7 @@ defmodule Matrix do
         {{r, c}, val}
       end
 
-    %__MODULE__{rs: rs, cs: cs, values: values}
+    %__MODULE__{row_len: row_len, col_len: col_len, values: values}
   end
 
   @doc """
@@ -51,7 +44,7 @@ defmodule Matrix do
   """
   @spec rows(matrix :: %Matrix{}) :: list(list(integer))
   def rows(matrix) do
-    for r <- matrix.rs do
+    for r <- 1..matrix.row_len do
       matrix |> row(r)
     end
   end
@@ -61,7 +54,7 @@ defmodule Matrix do
   """
   @spec row(matrix :: %Matrix{}, index :: integer) :: list(integer)
   def row(matrix, index) do
-    for c <- matrix.cs do
+    for c <- 1..matrix.col_len do
       matrix.values |> Map.fetch!({index, c})
     end
   end
@@ -71,7 +64,7 @@ defmodule Matrix do
   """
   @spec columns(matrix :: %Matrix{}) :: list(list(integer))
   def columns(matrix) do
-    for c <- matrix.cs do
+    for c <- 1..matrix.col_len do
       matrix |> column(c)
     end
   end
@@ -81,7 +74,7 @@ defmodule Matrix do
   """
   @spec column(matrix :: %Matrix{}, index :: integer) :: list(integer)
   def column(matrix, index) do
-    for r <- matrix.rs do
+    for r <- 1..matrix.row_len do
       matrix.values |> Map.fetch!({r, index})
     end
   end
