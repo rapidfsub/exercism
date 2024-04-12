@@ -1,69 +1,32 @@
 defmodule Dot do
-  defmacro graph(ast) do
-    get_attrs = fn
-      [attrs] ->
-        cond do
-          is_list(attrs) and Enum.all?(attrs, &is_tuple/1) -> attrs
-          true -> raise ArgumentError
-        end
-
-      nil ->
-        []
-
-      _ ->
-        raise ArgumentError
-    end
-
+  defmacro graph(do: ast) do
     ast
     |> Macro.prewalk(
-      quote do
-        Graph.new()
-      end,
+      Graph.new(),
       fn
-        [do: {:__block__, _, ast}], acc ->
-          {ast, acc}
+        {:graph, _, [attrs]}, acc when is_list(attrs) ->
+          {nil, acc |> Graph.put_attrs(attrs)}
 
-        [do: ast], acc ->
-          {[ast], acc}
+        {:--, _, [{from, _, nil}, {to, _, [attrs]}]}, acc when is_list(attrs) ->
+          {nil, acc |> Graph.add_edge(from, to, attrs)}
 
-        {:--, _, nodes}, acc ->
-          case nodes do
-            [{from, _, nil}, {to, _, nodes}] ->
-              attrs = get_attrs.(nodes)
+        {:--, _, [{from, _, nil}, {to, _, nil}]}, acc ->
+          {nil, acc |> Graph.add_edge(from, to)}
 
-              {nil,
-               quote do
-                 unquote(acc) |> Graph.add_edge(unquote(from), unquote(to), unquote(attrs))
-               end}
+        {name, _, [attrs]}, acc when is_list(attrs) ->
+          {nil, acc |> Graph.add_node(name, attrs)}
 
-            _ ->
-              raise ArgumentError
-          end
+        {name, _, nil}, acc ->
+          {nil, acc |> Graph.add_node(name)}
 
-        {:graph, _, nodes}, acc ->
-          attrs = get_attrs.(nodes)
+        {_, _, _} = node, acc ->
+          {node, acc}
 
-          {nil,
-           quote do
-             unquote(acc) |> Graph.put_attrs(unquote(attrs))
-           end}
-
-        {name, _, nodes}, acc ->
-          attrs = get_attrs.(nodes)
-
-          {nil,
-           quote do
-             unquote(acc) |> Graph.add_node(unquote(name), unquote(attrs))
-           end}
-
-        node, acc ->
-          if is_list(node) and Enum.all?(ast, &match?({_, _, _}, &1)) do
-            {node, acc}
-          else
-            raise ArgumentError
-          end
+        _node, _acc ->
+          raise ArgumentError
       end
     )
     |> elem(1)
+    |> Macro.escape()
   end
 end
