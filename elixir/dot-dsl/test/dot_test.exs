@@ -23,7 +23,7 @@ defmodule DotTest do
              )
   end
 
-  @tag :pending
+  # @tag :pending
   test "graph with one node" do
     assert %Graph{nodes: %{a: %{}}} ==
              exprt(
@@ -33,7 +33,7 @@ defmodule DotTest do
              )
   end
 
-  @tag :pending
+  # @tag :pending
   test "graph with one node with keywords" do
     assert %Graph{nodes: %{a: %{color: :green}}} ==
              exprt(
@@ -43,7 +43,7 @@ defmodule DotTest do
              )
   end
 
-  @tag :pending
+  # @tag :pending
   test "graph with one edge" do
     assert %Graph{
              nodes: %{a: %{}, b: %{}},
@@ -56,7 +56,7 @@ defmodule DotTest do
              )
   end
 
-  @tag :pending
+  # @tag :pending
   test "graph with just attribute" do
     assert %Graph{attrs: %{foo: 1}} ==
              exprt(
@@ -66,7 +66,7 @@ defmodule DotTest do
              )
   end
 
-  @tag :pending
+  # @tag :pending
   test "graph with attrs" do
     assert %Graph{
              attrs: %{bar: true, foo: 1, title: "Testing Attrs"},
@@ -88,7 +88,7 @@ defmodule DotTest do
              )
   end
 
-  @tag :pending
+  # @tag :pending
   test "keywords stuck to graph without space" do
     assert_raise ArgumentError, fn ->
       exprt(
@@ -99,7 +99,7 @@ defmodule DotTest do
     end
   end
 
-  @tag :pending
+  # @tag :pending
   test "keywords stuck to node without space" do
     assert_raise ArgumentError, fn ->
       exprt(
@@ -110,7 +110,7 @@ defmodule DotTest do
     end
   end
 
-  @tag :pending
+  # @tag :pending
   test "keywords stuck to edge without space" do
     assert_raise ArgumentError, fn ->
       exprt(
@@ -121,7 +121,7 @@ defmodule DotTest do
     end
   end
 
-  @tag :pending
+  # @tag :pending
   test "invalid statement: int" do
     assert_raise ArgumentError, fn ->
       exprt(
@@ -133,7 +133,7 @@ defmodule DotTest do
     end
   end
 
-  @tag :pending
+  # @tag :pending
   test "invalid statement: list" do
     assert_raise ArgumentError, fn ->
       exprt(
@@ -144,7 +144,7 @@ defmodule DotTest do
     end
   end
 
-  @tag :pending
+  # @tag :pending
   test "invalid statement: qualified atom" do
     assert_raise ArgumentError, fn ->
       exprt(
@@ -155,7 +155,7 @@ defmodule DotTest do
     end
   end
 
-  @tag :pending
+  # @tag :pending
   test "invalid statement: graph with no keywords" do
     assert_raise ArgumentError, fn ->
       exprt(
@@ -166,7 +166,7 @@ defmodule DotTest do
     end
   end
 
-  @tag :pending
+  # @tag :pending
   test "two attribute lists" do
     assert_raise ArgumentError, fn ->
       exprt(
@@ -177,7 +177,7 @@ defmodule DotTest do
     end
   end
 
-  @tag :pending
+  # @tag :pending
   test "non-keyword attribute list" do
     assert_raise ArgumentError, fn ->
       exprt(
@@ -188,7 +188,7 @@ defmodule DotTest do
     end
   end
 
-  @tag :pending
+  # @tag :pending
   test "int edge" do
     assert_raise ArgumentError, fn ->
       exprt(
