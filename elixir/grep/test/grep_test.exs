@@ -54,7 +54,7 @@ defmodule GrepTest do
                """
     end
 
-    @tag :pending
+    # @tag :pending
     test "one match, print line numbers flag" do
       assert Grep.grep("Forbidden", ["-n"], ["paradise-lost.txt"]) ==
                """
@@ -62,7 +62,7 @@ defmodule GrepTest do
                """
     end
 
-    @tag :pending
+    # @tag :pending
     test "one match, case-insensitive flag" do
       assert Grep.grep("FORBIDDEN", ["-i"], ["paradise-lost.txt"]) ==
                """
@@ -70,7 +70,7 @@ defmodule GrepTest do
                """
     end
 
-    @tag :pending
+    # @tag :pending
     test "one match, print file names flag" do
       assert Grep.grep("Forbidden", ["-l"], ["paradise-lost.txt"]) ==
                """
@@ -78,7 +78,7 @@ defmodule GrepTest do
                """
     end
 
-    @tag :pending
+    # @tag :pending
     test "one match, match entire lines flag" do
       assert Grep.grep("With loss of Eden, till one greater Man", ["-x"], ["paradise-lost.txt"]) ==
                """
@@ -86,7 +86,7 @@ defmodule GrepTest do
                """
     end
 
-    @tag :pending
+    # @tag :pending
     test "one match, multiple flags" do
       assert Grep.grep("OF ATREUS, Agamemnon, KIng of MEN.", ["-n", "-i", "-x"], ["iliad.txt"]) ==
                """
@@ -94,7 +94,7 @@ defmodule GrepTest do
                """
     end
 
-    @tag :pending
+    # @tag :pending
     test "several matches, no flags" do
       assert Grep.grep("may", [], ["midsummer-night.txt"]) ==
                """
@@ -104,7 +104,7 @@ defmodule GrepTest do
                """
     end
 
-    @tag :pending
+    # @tag :pending
     test "several matches, print line numbers flag" do
       assert Grep.grep("may", ["-n"], ["midsummer-night.txt"]) ==
                """
@@ -114,12 +114,12 @@ defmodule GrepTest do
                """
     end
 
-    @tag :pending
+    # @tag :pending
     test "several matches, match entire lines flag" do
       assert Grep.grep("may", ["-x"], ["midsummer-night.txt"]) == ""
     end
 
-    @tag :pending
+    # @tag :pending
     test "several matches, case-insensitive flag" do
       assert Grep.grep("ACHILLES", ["-i"], ["iliad.txt"]) ==
                """
@@ -128,7 +128,7 @@ defmodule GrepTest do
                """
     end
 
-    @tag :pending
+    # @tag :pending
     test "several matches, inverted flag" do
       assert Grep.grep("Of", ["-v"], ["paradise-lost.txt"]) ==
                """
@@ -140,12 +140,12 @@ defmodule GrepTest do
                """
     end
 
-    @tag :pending
+    # @tag :pending
     test "no matches, various flags" do
       assert Grep.grep("Gandalf", ["-n", "-l", "-x", "-i"], ["iliad.txt"]) == ""
     end
 
-    @tag :pending
+    # @tag :pending
     test "one match, file flag takes precedence over line flag" do
       assert Grep.grep("ten", ["-n", "-l"], ["iliad.txt"]) ==
                """
@@ -153,7 +153,7 @@ defmodule GrepTest do
                """
     end
 
-    @tag :pending
+    # @tag :pending
     test "several matches, inverted and match entire lines flags" do
       assert Grep.grep("Illustrious into Ades premature,", ["-x", "-v"], ["iliad.txt"]) ==
                """
@@ -170,7 +170,7 @@ defmodule GrepTest do
   end
 
   describe "grepping multiples files at once" do
-    @tag :pending
+    # @tag :pending
     test "one match, no flags" do
       assert Grep.grep("Agamemnon", [], ["iliad.txt", "midsummer-night.txt", "paradise-lost.txt"]) ==
                """
@@ -178,7 +178,7 @@ defmodule GrepTest do
                """
     end
 
-    @tag :pending
+    # @tag :pending
     test "several matches, no flags" do
       assert Grep.grep("may", [], ["iliad.txt", "midsummer-night.txt", "paradise-lost.txt"]) ==
                """
@@ -188,7 +188,7 @@ defmodule GrepTest do
                """
     end
 
-    @tag :pending
+    # @tag :pending
     test "several matches, print line numbers flag" do
       assert Grep.grep("that", ["-n"], ["iliad.txt", "midsummer-night.txt", "paradise-lost.txt"]) ==
                """
@@ -199,7 +199,7 @@ defmodule GrepTest do
                """
     end
 
-    @tag :pending
+    # @tag :pending
     test "one match, print file names flag" do
       assert Grep.grep("who", ["-l"], ["iliad.txt", "midsummer-night.txt", "paradise-lost.txt"]) ==
                """
@@ -208,7 +208,7 @@ defmodule GrepTest do
                """
     end
 
-    @tag :pending
+    # @tag :pending
     test "several matches, case-insensitive flag" do
       assert Grep.grep("TO", ["-i"], ["iliad.txt", "midsummer-night.txt", "paradise-lost.txt"]) ==
                """
@@ -225,7 +225,7 @@ defmodule GrepTest do
                """
     end
 
-    @tag :pending
+    # @tag :pending
     test "several matches, inverted flag" do
       assert Grep.grep("a", ["-v"], ["iliad.txt", "midsummer-night.txt", "paradise-lost.txt"]) ==
                """
@@ -235,7 +235,7 @@ defmodule GrepTest do
                """
     end
 
-    @tag :pending
+    # @tag :pending
     test "one match, match entire lines flag" do
       assert Grep.grep("But I beseech your grace that I may know", ["-x"], [
                "iliad.txt",
@@ -247,7 +247,7 @@ defmodule GrepTest do
                """
     end
 
-    @tag :pending
+    # @tag :pending
     test "one match, multiple flags" do
       assert Grep.grep("WITH LOSS OF EDEN, TILL ONE GREATER MAN", ["-n", "-x", "-i"], [
                "iliad.txt",
@@ -259,7 +259,7 @@ defmodule GrepTest do
                """
     end
 
-    @tag :pending
+    # @tag :pending
     test "no matches, various flags" do
       assert Grep.grep("Frodo", ["-n", "-l", "-x", "-i"], [
                "iliad.txt",
@@ -268,7 +268,7 @@ defmodule GrepTest do
              ]) == ""
     end
 
-    @tag :pending
+    # @tag :pending
     test "several matches, file flag takes precedence over line number flag" do
       assert Grep.grep("who", ["-n", "-l"], [
                "iliad.txt",
@@ -281,7 +281,7 @@ defmodule GrepTest do
                """
     end
 
-    @tag :pending
+    # @tag :pending
     test "several matches, inverted and match entire lines flags" do
       assert Grep.grep("Illustrious into Ades premature,", ["-x", "-v"], [
                "iliad.txt",
