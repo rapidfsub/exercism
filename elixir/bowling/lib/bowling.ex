@@ -2,7 +2,7 @@ defmodule Frame do
   @enforce_keys [:i, :r1, :r2, :r3]
   defstruct @enforce_keys
 
-  defguard is_game_done(f)
+  defguard is_game_over(f)
            when f.i == 10 and f.r1 != nil and f.r2 != nil and (f.r3 != nil or f.r1 + f.r2 < 10)
 
   def new() do
@@ -38,7 +38,7 @@ defmodule Frame do
 end
 
 defmodule Bowling do
-  import Frame, only: [is_game_done: 1]
+  import Frame, only: [is_game_over: 1]
 
   @doc """
     Creates a new game of bowling that can be used to store the results of
@@ -71,7 +71,7 @@ defmodule Bowling do
   """
 
   @spec score(any) :: {:ok, integer} | {:error, String.t()}
-  def score([%Frame{} = f | _]) when not is_game_done(f) do
+  def score([%Frame{} = f | _]) when not is_game_over(f) do
     {:error, "Score cannot be taken until the end of the game"}
   end
 
@@ -87,21 +87,10 @@ defmodule Bowling do
     end)
   end
 
-  defp do_score([%Frame{i: 10} = f]) do
-    f.r1 + f.r2 + (f.r3 || 0)
-  end
-
-  defp do_score([%Frame{r1: 10} | fs]) do
-    case fs do
-      [%Frame{r1: x, r2: nil}, %Frame{r1: y} | _] -> 10 + x + y
-      [%Frame{r1: x, r2: y} | _] -> 10 + x + y
-    end
-  end
-
-  defp do_score([%Frame{} = f, %Frame{r1: x} | _fs]) do
-    case f.r1 + f.r2 do
-      10 -> 10 + x
-      score -> score
-    end
-  end
+  defp do_score([%Frame{i: 10, r3: nil} = f]), do: f.r1 + f.r2
+  defp do_score([%Frame{i: 10} = f]), do: f.r1 + f.r2 + f.r3
+  defp do_score([%Frame{r1: 10}, %Frame{r1: 10}, %Frame{r1: x} | _fs]), do: 20 + x
+  defp do_score([%Frame{r1: 10}, %Frame{r1: x, r2: y} | _fs]), do: 10 + x + y
+  defp do_score([%Frame{} = f, %Frame{r1: x} | _fs]) when f.r1 + f.r2 == 10, do: 10 + x
+  defp do_score([%Frame{} = f | _fs]), do: f.r1 + f.r2
 end
