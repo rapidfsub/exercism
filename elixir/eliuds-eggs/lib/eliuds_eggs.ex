@@ -4,5 +4,6 @@ defmodule EliudsEggs do
   """
   @spec egg_count(number :: integer()) :: non_neg_integer()
   def egg_count(number) do
+    Integer.digits(number, 2) |> Enum.sum()
   end
 end
