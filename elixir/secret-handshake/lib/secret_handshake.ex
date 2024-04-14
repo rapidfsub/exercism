@@ -15,5 +15,19 @@ defmodule SecretHandshake do
   """
   @spec commands(code :: integer) :: list(String.t())
   def commands(code) do
+    []
+    |> run(code, 0x08, &["jump" | &1])
+    |> run(code, 0x04, &["close your eyes" | &1])
+    |> run(code, 0x02, &["double blink" | &1])
+    |> run(code, 0x01, &["wink" | &1])
+    |> run(code, 0x10, &Enum.reverse/1)
+  end
+
+  defp run(acc, code, bit, fun) do
+    if Bitwise.band(code, bit) > 0 do
+      fun.(acc)
+    else
+      acc
+    end
   end
 end
