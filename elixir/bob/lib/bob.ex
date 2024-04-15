@@ -2,7 +2,7 @@ defmodule Bob do
   @spec hey(String.t()) :: String.t()
   def hey(input) do
     input = String.trim(input)
-    shouting = String.match?(input, ~r/\p{L}/u) && String.upcase(input) == input
+    shouting = input == String.upcase(input) && input != String.downcase(input)
     asking = String.ends_with?(input, "?")
     String.trim(input) |> do_hey(shouting, asking)
   end
