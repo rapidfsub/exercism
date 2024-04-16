@@ -15,11 +15,11 @@ defmodule ScaleGenerator do
   """
   @spec step(scale :: list(String.t()), tonic :: String.t(), step :: String.t()) :: String.t()
   def step(scale, tonic, step) do
-    scale
-    |> Enum.concat(scale)
-    |> Enum.drop_while(&(&1 != tonic))
-    |> Enum.drop(step_size(step))
-    |> hd()
+    rotate(scale, tonic) |> Enum.fetch!(step_size(step))
+  end
+
+  defp rotate(scale, tonic) do
+    Enum.drop_while(scale ++ scale, &(&1 != tonic))
   end
 
   defp step_size("m"), do: 1
@@ -42,27 +42,12 @@ defmodule ScaleGenerator do
   """
   @spec chromatic_scale(tonic :: String.t()) :: list(String.t())
   def chromatic_scale(tonic \\ "C") do
-    chromatic_scale(tonic, &next_tone/1)
+    do_chromatic_scale(~w[C C# D D# E F F# G G# A A# B], tonic)
   end
 
-  defp next_tone("C"), do: "C#"
-  defp next_tone("C#"), do: "D"
-  defp next_tone("D"), do: "D#"
-  defp next_tone("D#"), do: "E"
-  defp next_tone("E"), do: "F"
-  defp next_tone("F"), do: "F#"
-  defp next_tone("F#"), do: "G"
-  defp next_tone("G"), do: "G#"
-  defp next_tone("G#"), do: "A"
-  defp next_tone("A"), do: "A#"
-  defp next_tone("A#"), do: "B"
-  defp next_tone("B"), do: "C"
-
-  defp chromatic_scale(tonic, fun) do
-    tonic
-    |> upcase_tone()
-    |> Stream.unfold(&{&1, fun.(&1)})
-    |> Enum.take(13)
+  @chromatic_scale_size 13
+  defp do_chromatic_scale(scale, tonic) do
+    rotate(scale, upcase_tone(tonic)) |> Enum.take(@chromatic_scale_size)
   end
 
   defp upcase_tone(<<t::binary-size(1)>>), do: String.upcase(t)
@@ -82,21 +67,8 @@ defmodule ScaleGenerator do
   """
   @spec flat_chromatic_scale(tonic :: String.t()) :: list(String.t())
   def flat_chromatic_scale(tonic \\ "C") do
-    chromatic_scale(tonic, &flat_next_tone/1)
+    do_chromatic_scale(~w[C Db D Eb E F Gb G Ab A Bb B], tonic)
   end
-
-  defp flat_next_tone("C"), do: "Db"
-  defp flat_next_tone("Db"), do: "D"
-  defp flat_next_tone("D"), do: "Eb"
-  defp flat_next_tone("Eb"), do: "E"
-  defp flat_next_tone("E"), do: "F"
-  defp flat_next_tone("F"), do: "Gb"
-  defp flat_next_tone("Gb"), do: "G"
-  defp flat_next_tone("G"), do: "Ab"
-  defp flat_next_tone("Ab"), do: "A"
-  defp flat_next_tone("A"), do: "Bb"
-  defp flat_next_tone("Bb"), do: "B"
-  defp flat_next_tone("B"), do: "C"
 
   @doc """
   Certain scales will require the use of the flat version, depending on the
