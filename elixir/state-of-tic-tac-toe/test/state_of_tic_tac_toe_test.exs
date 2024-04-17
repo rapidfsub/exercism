@@ -13,7 +13,7 @@ defmodule StateOfTicTacToeTest do
       assert StateOfTicTacToe.game_state(board) == {:ok, :win}
     end
 
-    @tag :pending
+    # @tag :pending
     test "Finished game where X won via middle column victory" do
       board = """
       OXO
@@ -24,7 +24,7 @@ defmodule StateOfTicTacToeTest do
       assert StateOfTicTacToe.game_state(board) == {:ok, :win}
     end
 
-    @tag :pending
+    # @tag :pending
     test "Finished game where X won via right column victory" do
       board = """
       OOX
@@ -35,7 +35,7 @@ defmodule StateOfTicTacToeTest do
       assert StateOfTicTacToe.game_state(board) == {:ok, :win}
     end
 
-    @tag :pending
+    # @tag :pending
     test "Finished game where O won via left column victory" do
       board = """
       OXX
@@ -46,7 +46,7 @@ defmodule StateOfTicTacToeTest do
       assert StateOfTicTacToe.game_state(board) == {:ok, :win}
     end
 
-    @tag :pending
+    # @tag :pending
     test "Finished game where O won via middle column victory" do
       board = """
       XOX
@@ -57,7 +57,7 @@ defmodule StateOfTicTacToeTest do
       assert StateOfTicTacToe.game_state(board) == {:ok, :win}
     end
 
-    @tag :pending
+    # @tag :pending
     test "Finished game where O won via right column victory" do
       board = """
       XXO
@@ -68,7 +68,7 @@ defmodule StateOfTicTacToeTest do
       assert StateOfTicTacToe.game_state(board) == {:ok, :win}
     end
 
-    @tag :pending
+    # @tag :pending
     test "Finished game where X won via top row victory" do
       board = """
       XXX
@@ -79,7 +79,7 @@ defmodule StateOfTicTacToeTest do
       assert StateOfTicTacToe.game_state(board) == {:ok, :win}
     end
 
-    @tag :pending
+    # @tag :pending
     test "Finished game where X won via middle row victory" do
       board = """
       O..
@@ -90,7 +90,7 @@ defmodule StateOfTicTacToeTest do
       assert StateOfTicTacToe.game_state(board) == {:ok, :win}
     end
 
-    @tag :pending
+    # @tag :pending
     test "Finished game where X won via bottom row victory" do
       board = """
       .OO
@@ -101,7 +101,7 @@ defmodule StateOfTicTacToeTest do
       assert StateOfTicTacToe.game_state(board) == {:ok, :win}
     end
 
-    @tag :pending
+    # @tag :pending
     test "Finished game where O won via top row victory" do
       board = """
       OOO
@@ -112,7 +112,7 @@ defmodule StateOfTicTacToeTest do
       assert StateOfTicTacToe.game_state(board) == {:ok, :win}
     end
 
-    @tag :pending
+    # @tag :pending
     test "Finished game where O won via middle row victory" do
       board = """
       XX.
@@ -123,7 +123,7 @@ defmodule StateOfTicTacToeTest do
       assert StateOfTicTacToe.game_state(board) == {:ok, :win}
     end
 
-    @tag :pending
+    # @tag :pending
     test "Finished game where O won via bottom row victory" do
       board = """
       XOX
@@ -134,7 +134,7 @@ defmodule StateOfTicTacToeTest do
       assert StateOfTicTacToe.game_state(board) == {:ok, :win}
     end
 
-    @tag :pending
+    # @tag :pending
     test "Finished game where X won via falling diagonal victory" do
       board = """
       XOO
@@ -145,7 +145,7 @@ defmodule StateOfTicTacToeTest do
       assert StateOfTicTacToe.game_state(board) == {:ok, :win}
     end
 
-    @tag :pending
+    # @tag :pending
     test "Finished game where X won via rising diagonal victory" do
       board = """
       O.X
@@ -156,7 +156,7 @@ defmodule StateOfTicTacToeTest do
       assert StateOfTicTacToe.game_state(board) == {:ok, :win}
     end
 
-    @tag :pending
+    # @tag :pending
     test "Finished game where O won via falling diagonal victory" do
       board = """
       OXX
@@ -167,7 +167,7 @@ defmodule StateOfTicTacToeTest do
       assert StateOfTicTacToe.game_state(board) == {:ok, :win}
     end
 
-    @tag :pending
+    # @tag :pending
     test "Finished game where O won via rising diagonal victory" do
       board = """
       ..O
@@ -178,7 +178,7 @@ defmodule StateOfTicTacToeTest do
       assert StateOfTicTacToe.game_state(board) == {:ok, :win}
     end
 
-    @tag :pending
+    # @tag :pending
     test "Finished game where X won via a row and a column victory" do
       board = """
       XXX
@@ -189,7 +189,7 @@ defmodule StateOfTicTacToeTest do
       assert StateOfTicTacToe.game_state(board) == {:ok, :win}
     end
 
-    @tag :pending
+    # @tag :pending
     test "Finished game where X won via two diagonal victories" do
       board = """
       XOX
@@ -202,7 +202,7 @@ defmodule StateOfTicTacToeTest do
   end
 
   describe "Drawn games" do
-    @tag :pending
+    # @tag :pending
     test "Draw" do
       board = """
       XOX
@@ -213,7 +213,7 @@ defmodule StateOfTicTacToeTest do
       assert StateOfTicTacToe.game_state(board) == {:ok, :draw}
     end
 
-    @tag :pending
+    # @tag :pending
     test "Another Draw" do
       board = """
       XXO
@@ -228,7 +228,7 @@ defmodule StateOfTicTacToeTest do
   end
 
   describe "Ongoing games" do
-    @tag :pending
+    # @tag :pending
     test "Ongoing game: one move in" do
       board = """
       ...
@@ -239,7 +239,7 @@ defmodule StateOfTicTacToeTest do
       assert StateOfTicTacToe.game_state(board) == {:ok, :ongoing}
     end
 
-    @tag :pending
+    # @tag :pending
     test "Ongoing game: two moves in" do
       board = """
       O..
@@ -250,7 +250,7 @@ defmodule StateOfTicTacToeTest do
       assert StateOfTicTacToe.game_state(board) == {:ok, :ongoing}
     end
 
-    @tag :pending
+    # @tag :pending
     test "Ongoing game: five moves in" do
       board = """
       X..
@@ -263,7 +263,7 @@ defmodule StateOfTicTacToeTest do
   end
 
   describe "Invalid boards" do
-    @tag :pending
+    # @tag :pending
     test "Invalid board: X went twice" do
       board = """
       XX.
@@ -274,7 +274,7 @@ defmodule StateOfTicTacToeTest do
       assert StateOfTicTacToe.game_state(board) == {:error, "Wrong turn order: X went twice"}
     end
 
-    @tag :pending
+    # @tag :pending
     test "Invalid board: O started" do
       board = """
       OOX
@@ -285,7 +285,7 @@ defmodule StateOfTicTacToeTest do
       assert StateOfTicTacToe.game_state(board) == {:error, "Wrong turn order: O started"}
     end
 
-    @tag :pending
+    # @tag :pending
     test "Invalid board: X won and O kept playing" do
       board = """
       XXX
@@ -297,7 +297,7 @@ defmodule StateOfTicTacToeTest do
                {:error, "Impossible board: game should have ended after the game was won"}
     end
 
-    @tag :pending
+    # @tag :pending
     test "Invalid board: players kept playing after a win" do
       board = """
       XXX
