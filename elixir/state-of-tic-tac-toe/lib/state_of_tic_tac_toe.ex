@@ -1,4 +1,7 @@
 defmodule StateOfTicTacToe do
+  @lines Enum.flat_map(0..2, fn i -> [[{i, 0}, {i, 1}, {i, 2}], [{0, i}, {1, i}, {2, i}]] end) ++
+           [[{0, 0}, {1, 1}, {2, 2}], [{0, 2}, {1, 1}, {2, 0}]]
+
   @doc """
   Determine the state a game of tic-tac-toe where X starts.
   """
@@ -12,16 +15,7 @@ defmodule StateOfTicTacToe do
       end
 
     wins =
-      0..2
-      |> Enum.flat_map(fn i ->
-        [
-          [{i, 0}, {i, 1}, {i, 2}],
-          [{0, i}, {1, i}, {2, i}]
-        ]
-      end)
-      |> List.insert_at(0, [{0, 0}, {1, 1}, {2, 2}])
-      |> List.insert_at(0, [{0, 2}, {1, 1}, {2, 0}])
-      |> Enum.reduce(%{"X" => 0, "O" => 0}, fn points, acc ->
+      Enum.reduce(@lines, %{"X" => 0, "O" => 0}, fn points, acc ->
         [value | _] = values = points |> Enum.map(&Map.fetch!(matrix, &1))
 
         if value in ["X", "O"] and values |> Enum.all?(&(&1 == value)) do
