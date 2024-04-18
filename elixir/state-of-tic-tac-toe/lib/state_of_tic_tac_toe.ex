@@ -7,30 +7,24 @@ defmodule StateOfTicTacToe do
   """
   @spec game_state(board :: String.t()) :: {:ok, :win | :ongoing | :draw} | {:error, String.t()}
   def game_state(board) do
-    board = board |> String.split("\n") |> Enum.map(&String.graphemes/1)
-
-    matrix =
-      for {row, i} <- Enum.with_index(board), {x, j} <- Enum.with_index(row), into: %{} do
-        {{i, j}, x}
+    board =
+      for {row, i} <- String.split(board, "\n") |> Enum.with_index(),
+          {cell, j} <- String.graphemes(row) |> Enum.with_index(),
+          into: %{} do
+        {{i, j}, cell}
       end
 
-    wins =
+    %{"X" => x_win, "O" => o_win} =
       Enum.reduce(@lines, %{"X" => 0, "O" => 0}, fn points, acc ->
-        [value | _] = values = points |> Enum.map(&Map.fetch!(matrix, &1))
-
-        if value in ["X", "O"] and values |> Enum.all?(&(&1 == value)) do
-          acc |> Map.update!(value, &(&1 + 1))
-        else
-          acc
+        case Enum.map(points, &Map.fetch!(board, &1)) do
+          [x, x, x] -> Map.update(acc, x, 1, &(&1 + 1))
+          _ -> acc
         end
       end)
 
-    o_win = wins |> Map.get("O", 0)
-    x_win = wins |> Map.get("X", 0)
-
-    tally = board |> List.flatten() |> Enum.frequencies()
-    o_count = tally |> Map.get("O", 0)
-    x_count = tally |> Map.get("X", 0)
+    tally = Enum.frequencies_by(board, &elem(&1, 1))
+    o_count = Map.get(tally, "O", 0)
+    x_count = Map.get(tally, "X", 0)
 
     cond do
       x_count < o_count ->
