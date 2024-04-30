@@ -8,13 +8,8 @@ defmodule StringSeries do
   def slices(s, size) when size > 0 do
     s
     |> String.graphemes()
-    |> Stream.unfold(fn letters ->
-      case Enum.take(letters, size) do
-        result when length(result) == size -> {Enum.join(result), Enum.drop(letters, 1)}
-        _ -> nil
-      end
-    end)
-    |> Enum.to_list()
+    |> Enum.chunk_every(size, 1, :discard)
+    |> Enum.map(&Enum.join/1)
   end
 
   def slices(_s, _size) do
