@@ -44,8 +44,12 @@ defmodule AffineCipher do
           |> String.replace(" ", "")
           |> to_charlist()
           |> Enum.map(fn
-            letter when letter in ?a..?z -> mod(mmi(a) * (letter - ?a - b), @m) + ?a
-            letter when letter in ?0..?9 -> letter
+            letter when letter in ?a..?z ->
+              {_, mmi, _} = Integer.extended_gcd(a, @m)
+              mod(mmi * (letter - ?a - b), @m) + ?a
+
+            letter when letter in ?0..?9 ->
+              letter
           end)
           |> to_string()
 
@@ -53,13 +57,6 @@ defmodule AffineCipher do
 
       _ ->
         {:error, "a and m must be coprime."}
-    end
-  end
-
-  defp mmi(a, result \\ 1) when result <= 1_000_000 do
-    case mod(a * result, @m) do
-      1 -> result
-      _ -> mmi(a, result + 1)
     end
   end
 
