@@ -7,7 +7,8 @@ defmodule Acronym do
   def abbreviate(string) do
     string
     |> String.split(~r/[^\p{L}']+/u, trim: true)
-    |> Enum.map(fn <<first::binary-size(1), _::binary>> -> String.upcase(first) end)
+    |> Enum.map(&String.first/1)
     |> Enum.join()
+    |> String.upcase()
   end
 end
