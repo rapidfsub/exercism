@@ -37,19 +37,15 @@ defmodule AffineCipher do
   """
   @spec decode(key :: key(), message :: String.t()) :: {:ok, String.t()} | {:error, String.t()}
   def decode(%{a: a, b: b}, encrypted) do
-    case Integer.gcd(a, @m) do
-      1 ->
+    case Integer.extended_gcd(a, @m) do
+      {1, mmi, _} ->
         result =
           encrypted
           |> String.replace(" ", "")
           |> to_charlist()
           |> Enum.map(fn
-            letter when letter in ?a..?z ->
-              {_, mmi, _} = Integer.extended_gcd(a, @m)
-              mod(mmi * (letter - ?a - b), @m) + ?a
-
-            letter when letter in ?0..?9 ->
-              letter
+            letter when letter in ?a..?z -> mod(mmi * (letter - ?a - b), @m) + ?a
+            letter when letter in ?0..?9 -> letter
           end)
           |> to_string()
 
