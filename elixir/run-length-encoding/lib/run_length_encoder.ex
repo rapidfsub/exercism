@@ -15,7 +15,7 @@ defmodule RunLengthEncoder do
   defp encode(<<>>, l, 1), do: l
   defp encode(<<>>, l, c), do: to_string(c) <> l
   defp encode(<<h::binary-1, t::binary>>, nil, _c), do: encode(t, h, 1)
-  defp encode(<<l::binary-1, t::binary>>, l, c), do: encode(t, l, c + 1)
+  defp encode(<<l::binary-1, t::binary>>, l, c), k(do: encode(t, l, c + 1))
   defp encode(<<h::binary-1, t::binary>>, l, 1), do: l <> encode(t, h, 1)
   defp encode(<<h::binary-1, t::binary>>, l, c), do: to_string(c) <> l <> encode(t, h, 1)
 
