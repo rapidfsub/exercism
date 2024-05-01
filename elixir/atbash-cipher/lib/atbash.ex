@@ -1,8 +1,4 @@
 defmodule Atbash do
-  @alphabet ?a..?z
-  @numbers ?0..?9
-  @end_index Enum.count(@alphabet) - 1
-
   @doc """
   Encode a given plaintext to the corresponding ciphertext
 
@@ -29,8 +25,8 @@ defmodule Atbash do
     |> String.downcase()
     |> to_charlist()
     |> Enum.flat_map(fn
-      l when l in @numbers -> [l]
-      l when l in @alphabet -> [@end_index - l + ?a * 2]
+      l when l in ?0..?9 -> [l]
+      l when l in ?a..?z -> [?z - l + ?a]
       _l -> []
     end)
   end
