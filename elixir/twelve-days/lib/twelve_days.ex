@@ -5,7 +5,7 @@ defmodule TwelveDays do
   """
   @spec verse(number :: integer) :: String.t()
   def verse(number) do
-    "On the #{in_english(number)} day of Christmas my true love gave to me: #{gifts(number)}."
+    "On the #{in_english(number)} day of Christmas my true love gave to me: #{gifts(number)} in a Pear Tree."
   end
 
   defp in_english(1), do: "first"
@@ -25,7 +25,7 @@ defmodule TwelveDays do
   defp gifts(2), do: gift(2) <> ", and " <> gifts(1)
   defp gifts(1), do: gift(1)
 
-  defp gift(1), do: "a Partridge in a Pear Tree"
+  defp gift(1), do: "a Partridge"
   defp gift(2), do: "two Turtle Doves"
   defp gift(3), do: "three French Hens"
   defp gift(4), do: "four Calling Birds"
