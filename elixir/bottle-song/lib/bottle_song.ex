@@ -7,19 +7,23 @@ defmodule BottleSong do
   def recite(start_bottle, take_down) when start_bottle > 0 do
     start_bottle..1//-1
     |> Enum.take(take_down)
-    |> Enum.map(&do_recite/1)
+    |> Enum.map(&paragraph/1)
     |> Enum.join("\n\n")
   end
 
-  defp do_recite(count) when count > 0 do
+  defp paragraph(count) when count > 0 do
+    line = sentence(count) |> String.capitalize()
+
     """
-    #{in_english(count) |> String.capitalize()} green #{bottle(count)} hanging on the wall,
-    """
-    |> String.duplicate(2)
-    |> Kernel.<>("""
+    #{line},
+    #{line},
     And if one green bottle should accidentally fall,
-    There'll be #{in_english(count - 1)} green #{bottle(count - 1)} hanging on the wall.\
-    """)
+    There'll be #{sentence(count - 1)}.\
+    """
+  end
+
+  defp sentence(count) do
+    "#{in_english(count)} green #{bottle(count)} hanging on the wall"
   end
 
   defp bottle(1), do: "bottle"
