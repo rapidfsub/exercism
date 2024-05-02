@@ -13,7 +13,7 @@ defmodule BottleSongTest do
                """
     end
 
-    @tag :pending
+    # @tag :pending
     test "Last generic verse" do
       assert BottleSong.recite(3, 1) ==
                """
@@ -24,7 +24,7 @@ defmodule BottleSongTest do
                """
     end
 
-    @tag :pending
+    # @tag :pending
     test "Verse with 2 bottles" do
       assert BottleSong.recite(2, 1) ==
                """
@@ -35,7 +35,7 @@ defmodule BottleSongTest do
                """
     end
 
-    @tag :pending
+    # @tag :pending
     test "Verse with 1 bottle" do
       assert BottleSong.recite(1, 1) ==
                """
@@ -48,7 +48,7 @@ defmodule BottleSongTest do
   end
 
   describe "[Multiple verses]" do
-    @tag :pending
+    # @tag :pending
     test "First two verses" do
       assert BottleSong.recite(10, 2) ==
                """
@@ -64,7 +64,7 @@ defmodule BottleSongTest do
                """
     end
 
-    @tag :pending
+    # @tag :pending
     test "Last three verses" do
       assert BottleSong.recite(3, 3) ==
                """
@@ -85,7 +85,7 @@ defmodule BottleSongTest do
                """
     end
 
-    @tag :pending
+    # @tag :pending
     test "All verses" do
       assert BottleSong.recite(10, 10) ==
                """
