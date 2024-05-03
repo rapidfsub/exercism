@@ -14,5 +14,10 @@ defmodule Pangram do
 
   @spec pangram?(String.t()) :: boolean
   def pangram?(sentence) do
+    sentence
+    |> String.downcase()
+    |> to_charlist()
+    |> Enum.reduce(MapSet.new(?a..?z), &MapSet.delete(&2, &1))
+    |> Enum.empty?()
   end
 end
