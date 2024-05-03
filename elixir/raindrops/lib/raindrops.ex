@@ -10,5 +10,17 @@ defmodule Raindrops do
   """
   @spec convert(pos_integer) :: String.t()
   def convert(number) do
+    [3, 5, 7]
+    |> Enum.filter(&(rem(number, &1) == 0))
+    |> Enum.map(&sound/1)
+    |> case do
+      [] -> number
+      sounds -> sounds
+    end
+    |> to_string()
   end
+
+  defp sound(3), do: "Pling"
+  defp sound(5), do: "Plang"
+  defp sound(7), do: "Plong"
 end
