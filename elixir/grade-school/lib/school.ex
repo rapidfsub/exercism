@@ -27,10 +27,7 @@ defmodule School do
   """
   @spec grade(school, integer) :: [String.t()]
   def grade(school, grade) do
-    school
-    |> Enum.filter(&(elem(&1, 1) == grade))
-    |> Enum.map(&elem(&1, 0))
-    |> Enum.sort()
+    roster(school, fn _n, g -> g == grade end)
   end
 
   @doc """
@@ -38,7 +35,12 @@ defmodule School do
   """
   @spec roster(school) :: [String.t()]
   def roster(school) do
+    roster(school, fn _n, _g -> true end)
+  end
+
+  defp roster(school, fun) do
     school
+    |> Enum.filter(fn {name, grade} -> fun.(name, grade) end)
     |> Enum.sort_by(fn {name, grade} -> {grade, name} end)
     |> Enum.map(&elem(&1, 0))
   end
