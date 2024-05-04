@@ -13,5 +13,16 @@ defmodule IsbnVerifier do
   """
   @spec isbn?(String.t()) :: boolean
   def isbn?(isbn) do
+    with [isbn] <- Regex.run(~r/^\p{N}{9}[\p{N}X]$/, String.replace(isbn, "-", "")) do
+      isbn
+      |> to_charlist()
+      |> Enum.map(fn
+        d when d in ?0..?9 -> d - ?0
+        ?X -> 10
+      end)
+      |> Enum.with_index(fn d, i -> d * (10 - i) end)
+      |> Enum.sum()
+      |> rem(11) == 0
+    end
   end
 end
