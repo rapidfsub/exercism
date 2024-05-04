@@ -12,20 +12,25 @@ defmodule School do
   """
   @spec new() :: school
   def new() do
+    %{}
   end
 
   @doc """
   Add a student to a particular grade in school.
   """
   @spec add(school, String.t(), integer) :: {:ok | :error, school}
-  def add(school, name, grade) do
-  end
+  def add(school, name, _grade) when is_map_key(school, name), do: {:error, school}
+  def add(school, name, grade), do: {:ok, Map.put(school, name, grade)}
 
   @doc """
   Return the names of the students in a particular grade, sorted alphabetically.
   """
   @spec grade(school, integer) :: [String.t()]
   def grade(school, grade) do
+    school
+    |> Enum.filter(&(elem(&1, 1) == grade))
+    |> Enum.map(&elem(&1, 0))
+    |> Enum.sort()
   end
 
   @doc """
@@ -33,5 +38,8 @@ defmodule School do
   """
   @spec roster(school) :: [String.t()]
   def roster(school) do
+    school
+    |> Enum.sort_by(fn {name, grade} -> {grade, name} end)
+    |> Enum.map(&elem(&1, 0))
   end
 end
