@@ -19,25 +19,31 @@ defmodule Ledger do
     defp do_compare(lhs, rhs) when lhs > rhs, do: :gt
     defp do_compare(_lhs, _rhs), do: :eq
 
+    def get_header(:en_US), do: row("Date", "Description", "Change")
+    def get_header(_locale), do: row("Datum", "Omschrijving", "Verandering")
+
+    defp row(c1, c2, c3) do
+      [cell(c1, 10), cell(c2, 25), cell(c3, 13)] |> Enum.join(" | ")
+    end
+
+    defp cell(item, size) when size > 3 do
+      if item |> String.length() > size do
+        String.slice(item, 0, size - 3) <> "..."
+      else
+        String.pad_trailing(item, size)
+      end
+    end
+
     def format_entry(%__MODULE__{} = entry, currency, locale) do
-      [
+      row(
         Calendar.strftime(entry.date, date_format(locale)),
-        format_description(entry.description),
+        entry.description,
         format_amount(entry.amount_in_cents, locale, currency)
-      ]
-      |> Enum.join(" | ")
+      )
     end
 
     defp date_format(:en_US), do: "%m/%d/%Y"
     defp date_format(_locale), do: "%d-%m-%Y"
-
-    defp format_description(description) do
-      if description |> String.length() > 26 do
-        String.slice(description, 0, 22) <> "..."
-      else
-        String.pad_trailing(description, 25)
-      end
-    end
 
     defp format_amount(amount_in_cents, locale, currency) do
       amount_in_cents
@@ -90,10 +96,7 @@ defmodule Ledger do
     |> Enum.map(&Entry.new/1)
     |> Enum.sort(Entry)
     |> Enum.map(&Entry.format_entry(&1, currency, locale))
-    |> List.insert_at(0, get_header(locale))
+    |> List.insert_at(0, Entry.get_header(locale))
     |> Enum.map_join(&(&1 <> "\n"))
   end
-
-  defp get_header(:en_US), do: "Date       | Description               | Change       "
-  defp get_header(_locale), do: "Datum      | Omschrijving              | Verandering  "
 end
