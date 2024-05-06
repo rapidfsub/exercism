@@ -5,15 +5,7 @@ defmodule OcrNumbers do
   """
   @spec convert([String.t()]) :: {:ok, String.t()} | {:error, String.t()}
   def convert(input) do
-    with {:ok, acc} <-
-           input
-           |> Enum.chunk_every(4)
-           |> Enum.reduce_while({:ok, []}, fn input, {:ok, acc} ->
-             case do_convert(input) do
-               {:ok, result} -> {:cont, {:ok, [result | acc]}}
-               {:error, reason} -> {:halt, {:error, reason}}
-             end
-           end) do
+    with {:ok, acc} <- do_convert(input) do
       {:ok,
        acc
        |> Enum.reverse()
@@ -22,13 +14,24 @@ defmodule OcrNumbers do
     end
   end
 
-  defp do_convert([_, _, _, _] = input) do
+  defp do_convert(input) do
     input
+    |> Enum.chunk_every(4)
+    |> Enum.reduce_while({:ok, []}, fn row, {:ok, acc} ->
+      case convert_row(row) do
+        {:ok, result} -> {:cont, {:ok, [result | acc]}}
+        {:error, reason} -> {:halt, {:error, reason}}
+      end
+    end)
+  end
+
+  defp convert_row([_, _, _, _] = row) do
+    row
     |> Enum.map(&String.graphemes/1)
     |> Enum.map(&Enum.chunk_every(&1, 3))
     |> Enum.zip()
-    |> Enum.reduce_while({:ok, []}, fn input, {:ok, acc} ->
-      input
+    |> Enum.reduce_while({:ok, []}, fn cell, {:ok, acc} ->
+      cell
       |> Tuple.to_list()
       |> Enum.map(&to_string/1)
       |> convert_digit()
@@ -39,110 +42,90 @@ defmodule OcrNumbers do
     end)
   end
 
-  defp do_convert(_input) do
+  defp convert_row(_input) do
     {:error, "invalid line count"}
   end
 
-  defp convert_digit([
-         " _ ",
-         "| |",
-         "|_|",
-         "   "
-       ]) do
-    {:ok, "0"}
-  end
+  @zero [
+    " _ ",
+    "| |",
+    "|_|",
+    "   "
+  ]
 
-  defp convert_digit([
-         "   ",
-         "  |",
-         "  |",
-         "   "
-       ]) do
-    {:ok, "1"}
-  end
+  @one [
+    "   ",
+    "  |",
+    "  |",
+    "   "
+  ]
 
-  defp convert_digit([
-         " _ ",
-         " _|",
-         "|_ ",
-         "   "
-       ]) do
-    {:ok, "2"}
-  end
+  @two [
+    " _ ",
+    " _|",
+    "|_ ",
+    "   "
+  ]
 
-  defp convert_digit([
-         " _ ",
-         " _|",
-         " _|",
-         "   "
-       ]) do
-    {:ok, "3"}
-  end
+  @three [
+    " _ ",
+    " _|",
+    " _|",
+    "   "
+  ]
 
-  defp convert_digit([
-         "   ",
-         "|_|",
-         "  |",
-         "   "
-       ]) do
-    {:ok, "4"}
-  end
+  @four [
+    "   ",
+    "|_|",
+    "  |",
+    "   "
+  ]
 
-  defp convert_digit([
-         " _ ",
-         "|_ ",
-         " _|",
-         "   "
-       ]) do
-    {:ok, "5"}
-  end
+  @five [
+    " _ ",
+    "|_ ",
+    " _|",
+    "   "
+  ]
 
-  defp convert_digit([
-         " _ ",
-         "|_ ",
-         "|_|",
-         "   "
-       ]) do
-    {:ok, "6"}
-  end
+  @six [
+    " _ ",
+    "|_ ",
+    "|_|",
+    "   "
+  ]
 
-  defp convert_digit([
-         " _ ",
-         "  |",
-         "  |",
-         "   "
-       ]) do
-    {:ok, "7"}
-  end
+  @seven [
+    " _ ",
+    "  |",
+    "  |",
+    "   "
+  ]
 
-  defp convert_digit([
-         " _ ",
-         "|_|",
-         "|_|",
-         "   "
-       ]) do
-    {:ok, "8"}
-  end
+  @eight [
+    " _ ",
+    "|_|",
+    "|_|",
+    "   "
+  ]
 
-  defp convert_digit([
-         " _ ",
-         "|_|",
-         " _|",
-         "   "
-       ]) do
-    {:ok, "9"}
-  end
+  @nine [
+    " _ ",
+    "|_|",
+    " _|",
+    "   "
+  ]
 
-  defp convert_digit([
-         <<_, _, _>>,
-         <<_, _, _>>,
-         <<_, _, _>>,
-         <<_, _, _>>
-       ]) do
-    {:ok, "?"}
-  end
-
-  defp convert_digit(_input) do
-    {:error, "invalid column count"}
-  end
+  defp convert_digit(@zero), do: {:ok, "0"}
+  defp convert_digit(@one), do: {:ok, "1"}
+  defp convert_digit(@two), do: {:ok, "2"}
+  defp convert_digit(@three), do: {:ok, "3"}
+  defp convert_digit(@four), do: {:ok, "4"}
+  defp convert_digit(@five), do: {:ok, "5"}
+  defp convert_digit(@six), do: {:ok, "6"}
+  defp convert_digit(@seven), do: {:ok, "7"}
+  defp convert_digit(@eight), do: {:ok, "8"}
+  defp convert_digit(@nine), do: {:ok, "9"}
+  defp convert_digit([<<_, _, _>>, <<_, _, _>>, <<_, _, _>>, <<_, _, _>>]), do: {:ok, "?"}
+  defp convert_digit(_input), do: {:error, "invalid column count"}
 end
