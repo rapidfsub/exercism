@@ -9,7 +9,7 @@ defmodule LedgerTest do
              """
   end
 
-  @tag :pending
+  # @tag :pending
   test "one entry" do
     entries = [
       %{amount_in_cents: -1000, date: ~D[2015-01-01], description: "Buy present"}
@@ -22,7 +22,7 @@ defmodule LedgerTest do
              """
   end
 
-  @tag :pending
+  # @tag :pending
   test "credit and debit" do
     entries = [
       %{amount_in_cents: 1000, date: ~D[2015-01-02], description: "Get present"},
@@ -37,7 +37,7 @@ defmodule LedgerTest do
              """
   end
 
-  @tag :pending
+  # @tag :pending
   test "multiple entries on same date ordered by description" do
     entries = [
       %{amount_in_cents: 1000, date: ~D[2015-01-01], description: "Get present"},
@@ -52,7 +52,7 @@ defmodule LedgerTest do
              """
   end
 
-  @tag :pending
+  # @tag :pending
   test "final order tie breaker is change" do
     entries = [
       %{amount_in_cents: 0, date: ~D[2015-01-01], description: "Something"},
@@ -69,7 +69,7 @@ defmodule LedgerTest do
              """
   end
 
-  @tag :pending
+  # @tag :pending
   test "overlong description is truncated" do
     entries = [
       %{
@@ -86,7 +86,7 @@ defmodule LedgerTest do
              """
   end
 
-  @tag :pending
+  # @tag :pending
   test "euros" do
     entries = [
       %{amount_in_cents: -1000, date: ~D[2015-01-01], description: "Buy present"}
@@ -99,7 +99,7 @@ defmodule LedgerTest do
              """
   end
 
-  @tag :pending
+  # @tag :pending
   test "Dutch locale" do
     entries = [
       %{amount_in_cents: 123_456, date: ~D[2015-03-12], description: "Buy present"}
@@ -112,7 +112,7 @@ defmodule LedgerTest do
              """
   end
 
-  @tag :pending
+  # @tag :pending
   test "Dutch locale and euros" do
     entries = [
       %{amount_in_cents: 123_456, date: ~D[2015-03-12], description: "Buy present"}
@@ -125,7 +125,7 @@ defmodule LedgerTest do
              """
   end
 
-  @tag :pending
+  # @tag :pending
   test "Dutch negative number with 3 digits before decimal point" do
     entries = [
       %{amount_in_cents: -12345, date: ~D[2015-03-12], description: "Buy present"}
@@ -138,7 +138,7 @@ defmodule LedgerTest do
              """
   end
 
-  @tag :pending
+  # @tag :pending
   test "American negative number with 3 digits before decimal point" do
     entries = [
       %{amount_in_cents: -12345, date: ~D[2015-03-12], description: "Buy present"}

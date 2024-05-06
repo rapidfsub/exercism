@@ -1,4 +1,82 @@
 defmodule Ledger do
+  defmodule Entry do
+    @enforce_keys [:amount_in_cents, :date, :description]
+    defstruct @enforce_keys
+
+    def new(%{} = entry) do
+      struct!(__MODULE__, entry)
+    end
+
+    def compare(%__MODULE__{} = lhs, %__MODULE__{} = rhs) do
+      with :eq <- Date.compare(lhs.date, rhs.date),
+           :eq <- do_compare(lhs.description, rhs.description),
+           :eq <- do_compare(lhs.amount_in_cents, rhs.amount_in_cents) do
+        :eq
+      end
+    end
+
+    defp do_compare(lhs, rhs) when lhs < rhs, do: :lt
+    defp do_compare(lhs, rhs) when lhs > rhs, do: :gt
+    defp do_compare(_lhs, _rhs), do: :eq
+
+    def format_entry(%__MODULE__{} = entry, currency, locale) do
+      [
+        Calendar.strftime(entry.date, date_format(locale)),
+        format_description(entry.description),
+        format_amount(entry.amount_in_cents, locale, currency)
+      ]
+      |> Enum.join(" | ")
+    end
+
+    defp date_format(:en_US), do: "%m/%d/%Y"
+    defp date_format(_locale), do: "%d-%m-%Y"
+
+    defp format_description(description) do
+      if description |> String.length() > 26 do
+        String.slice(description, 0, 22) <> "..."
+      else
+        String.pad_trailing(description, 25)
+      end
+    end
+
+    defp format_amount(amount_in_cents, locale, currency) do
+      amount_in_cents
+      |> format_number(locale)
+      |> do_format_amount(currency_unit(currency), locale, amount_in_cents >= 0)
+      |> String.pad_leading(13)
+    end
+
+    defp do_format_amount(number, unit, :en_US, true), do: " #{unit}#{number} "
+    defp do_format_amount(number, unit, :en_US, false), do: "(#{unit}#{number})"
+    defp do_format_amount(number, unit, _locale, true), do: " #{unit} #{number} "
+    defp do_format_amount(number, unit, _locale, false), do: " #{unit} -#{number} "
+
+    defp format_number(number, :en_US), do: do_format_number(number, ",", ".")
+    defp format_number(number, _locale), do: do_format_number(number, ".", ",")
+
+    defp do_format_number(number, separator, decimal_point) do
+      {decimal, whole} =
+        number
+        |> abs()
+        |> Integer.digits()
+        |> Enum.reverse()
+        |> Enum.split(2)
+
+      decimal = Enum.join(decimal) |> String.pad_trailing(2, "0")
+
+      whole =
+        whole
+        |> Enum.chunk_every(3)
+        |> Enum.map_join(separator, &Enum.join/1)
+        |> String.pad_trailing(1, "0")
+
+      String.reverse(decimal <> decimal_point <> whole)
+    end
+
+    defp currency_unit(:eur), do: "€"
+    defp currency_unit(_currency), do: "$"
+  end
+
   @doc """
   Format the given entries given a currency and locale
   """
@@ -8,97 +86,14 @@ defmodule Ledger do
 
   @spec format_entries(currency(), locale(), list(entry())) :: String.t()
   def format_entries(currency, locale, entries) do
-    header =
-      if locale == :en_US do
-        "Date       | Description               | Change       \n"
-      else
-        "Datum      | Omschrijving              | Verandering  \n"
-      end
-
-    if entries == [] do
-      header
-    else
-      entries =
-        Enum.sort(entries, fn a, b ->
-          cond do
-            a.date.day < b.date.day -> true
-            a.date.day > b.date.day -> false
-            a.description < b.description -> true
-            a.description > b.description -> false
-            true -> a.amount_in_cents <= b.amount_in_cents
-          end
-        end)
-        |> Enum.map(fn entry -> format_entry(currency, locale, entry) end)
-        |> Enum.join("\n")
-
-      header <> entries <> "\n"
-    end
+    entries
+    |> Enum.map(&Entry.new/1)
+    |> Enum.sort(Entry)
+    |> Enum.map(&Entry.format_entry(&1, currency, locale))
+    |> List.insert_at(0, get_header(locale))
+    |> Enum.map_join(&(&1 <> "\n"))
   end
 
-  defp format_entry(currency, locale, entry) do
-    year = entry.date.year |> to_string()
-    month = entry.date.month |> to_string() |> String.pad_leading(2, "0")
-    day = entry.date.day |> to_string() |> String.pad_leading(2, "0")
-
-    date =
-      if locale == :en_US do
-        month <> "/" <> day <> "/" <> year <> " "
-      else
-        day <> "-" <> month <> "-" <> year <> " "
-      end
-
-    number =
-      if locale == :en_US do
-        decimal =
-          entry.amount_in_cents |> abs |> rem(100) |> to_string() |> String.pad_leading(2, "0")
-
-        whole =
-          if abs(div(entry.amount_in_cents, 100)) < 1000 do
-            abs(div(entry.amount_in_cents, 100)) |> to_string()
-          else
-            to_string(div(abs(div(entry.amount_in_cents, 100)), 1000)) <>
-              "," <> to_string(rem(abs(div(entry.amount_in_cents, 100)), 1000))
-          end
-
-        whole <> "." <> decimal
-      else
-        decimal =
-          entry.amount_in_cents |> abs |> rem(100) |> to_string() |> String.pad_leading(2, "0")
-
-        whole =
-          if abs(div(entry.amount_in_cents, 100)) < 1000 do
-            abs(div(entry.amount_in_cents, 100)) |> to_string()
-          else
-            to_string(div(abs(div(entry.amount_in_cents, 100)), 1000)) <>
-              "." <> to_string(rem(abs(div(entry.amount_in_cents, 100)), 1000))
-          end
-
-        whole <> "," <> decimal
-      end
-
-    amount =
-      if entry.amount_in_cents >= 0 do
-        if locale == :en_US do
-          "  #{if(currency == :eur, do: "€", else: "$")}#{number} "
-        else
-          " #{if(currency == :eur, do: "€", else: "$")} #{number} "
-        end
-      else
-        if locale == :en_US do
-          " (#{if(currency == :eur, do: "€", else: "$")}#{number})"
-        else
-          " #{if(currency == :eur, do: "€", else: "$")} -#{number} "
-        end
-      end
-      |> String.pad_leading(14, " ")
-
-    description =
-      if entry.description |> String.length() > 26 do
-        " " <> String.slice(entry.description, 0, 22) <> "..."
-      else
-        " " <> String.pad_trailing(entry.description, 25, " ")
-      end
-
-    date <> "|" <> description <> " |" <> amount
-  end
+  defp get_header(:en_US), do: "Date       | Description               | Change       "
+  defp get_header(_locale), do: "Datum      | Omschrijving              | Verandering  "
 end
