@@ -23,7 +23,7 @@ defmodule Alphametics do
       |> Enum.map(&String.trim/1)
       |> Enum.map(&to_charlist/1)
 
-    {operands, [output]} = Enum.split(words, -1)
+    {output, operands} = List.pop_at(words, -1)
     letters = List.flatten(words) |> Enum.uniq() |> Enum.sort()
     non_zeros = MapSet.new(words, &hd/1)
 
