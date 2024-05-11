@@ -21,20 +21,24 @@ defmodule Wordy do
   defp do_lex(<<>>), do: {:ok, []}
   defp do_lex(<<" ", question::binary>>), do: do_lex(question)
 
-  @regex ~r/^(plus|minus|multiplied by|divided by|-?\d+)(.*)$/
   defp do_lex(question) do
-    with [_, token, question] <- Regex.run(@regex, question), {:ok, tokens} <- do_lex(question) do
-      {:ok, [lex_token(token) | tokens]}
+    with {token, tail} <- lex_token(question), {:ok, tokens} <- do_lex(tail) do
+      {:ok, [token | tokens]}
     else
       _ -> {:error, :invalid_token}
     end
   end
 
-  defp lex_token("plus"), do: {:op, &+/2}
-  defp lex_token("minus"), do: {:op, &-/2}
-  defp lex_token("multiplied by"), do: {:op, &*/2}
-  defp lex_token("divided by"), do: {:op, &div/2}
-  defp lex_token(value), do: {:val, String.to_integer(value)}
+  defp lex_token(<<"plus", tail::binary>>), do: {{:op, &+/2}, tail}
+  defp lex_token(<<"minus", tail::binary>>), do: {{:op, &-/2}, tail}
+  defp lex_token(<<"multiplied by", tail::binary>>), do: {{:op, &*/2}, tail}
+  defp lex_token(<<"divided by", tail::binary>>), do: {{:op, &div/2}, tail}
+
+  defp lex_token(question) do
+    with {val, tail} <- Integer.parse(question) do
+      {{:val, val}, tail}
+    end
+  end
 
   defp exec(tokens) do
     exec(tokens, [])
