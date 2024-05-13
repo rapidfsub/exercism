@@ -29,68 +29,47 @@ defmodule Poker do
   """
   @spec best_hand(list(list(String.t()))) :: list(list(String.t()))
   def best_hand(hands) do
-    [{_, result} | _] = Enum.group_by(hands, &get_score/1) |> Enum.sort_by(&elem(&1, 0), :desc)
+    [{_, result} | _] = Enum.group_by(hands, &hand_score/1) |> Enum.sort_by(&elem(&1, 0), :desc)
     result
   end
 
-  defp get_score(hand) do
-    hand
-    |> Enum.map(&String.split_at(&1, -1))
-    |> Enum.map(fn {rank, suit} -> {rank_to_integer(rank), suit} end)
-    |> Enum.sort()
-    |> do_get_score()
+  defp hand_score(hand) do
+    hand =
+      hand
+      |> Enum.map(fn card ->
+        [_, rank, suit] = Regex.run(~r/(10|[JQKA2-9])([CDHS])/, card)
+        {rank_value(rank), suit}
+      end)
+      |> Enum.sort(:desc)
+
+    [r1 | _] =
+      modified_ranks =
+      case Enum.map(hand, &elem(&1, 0)) do
+        [14, 5, 4, 3, 2] -> [5, 4, 3, 2, 1]
+        ranks -> ranks
+      end
+
+    frequencies = Enum.frequencies(modified_ranks) |> Enum.sort_by(fn {k, v} -> {v, k} end, :desc)
+    is_straight = modified_ranks == [r1, r1 - 1, r1 - 2, r1 - 3, r1 - 4]
+    is_flush = Enum.dedup_by(hand, &elem(&1, 1)) |> length() == 1
+    tie_breaker = Enum.map(frequencies, &elem(&1, 0))
+    {category_score(frequencies, is_straight, is_flush), tie_breaker}
   end
 
-  defguardp is_straight(r1, r2, r3, r4, r5)
-            when {r1, r2, r3, r4, r5} == {r1, r1 + 1, r2 + 1, r3 + 1, r4 + 1}
+  defp rank_value("J"), do: 11
+  defp rank_value("Q"), do: 12
+  defp rank_value("K"), do: 13
+  defp rank_value("A"), do: 14
+  defp rank_value(rank), do: String.to_integer(rank)
 
-  # straight_flush
-  defp do_get_score([{r1, s}, {r2, s}, {r3, s}, {r4, s}, {r5, s}])
-       when is_straight(r1, r2, r3, r4, r5),
-       do: {8, r5}
-
-  defp do_get_score([{2, s}, {3, s}, {4, s}, {5, s}, {14, s}]), do: {8, 5}
-
-  # four_of_a_kind
-  defp do_get_score([{r2, _}, {r2, _}, {r2, _}, {r2, _}, {r1, _}]), do: {7, {r2, r1}}
-  defp do_get_score([{r1, _}, {r2, _}, {r2, _}, {r2, _}, {r2, _}]), do: {7, {r2, r1}}
-
-  # full_house
-  defp do_get_score([{r1, _}, {r1, _}, {r1, _}, {r2, _}, {r2, _}]), do: {6, {r1, r2}}
-  defp do_get_score([{r1, _}, {r1, _}, {r2, _}, {r2, _}, {r2, _}]), do: {6, {r2, r1}}
-
-  # flush
-  defp do_get_score([{r1, s}, {r2, s}, {r3, s}, {r4, s}, {r5, s}]), do: {5, {r5, r4, r3, r2, r1}}
-
-  # straight
-  defp do_get_score([{r1, _s1}, {r2, _s2}, {r3, _s3}, {r4, _s4}, {r5, _s5}])
-       when is_straight(r1, r2, r3, r4, r5),
-       do: {4, r5}
-
-  defp do_get_score([{2, _s1}, {3, _s2}, {4, _s3}, {5, _s4}, {14, _s5}]), do: {4, 5}
-
-  # three_of_a_kind
-  defp do_get_score([{r3, _}, {r3, _}, {r3, _}, {r1, _}, {r2, _}]), do: {3, {r3, r2, r1}}
-  defp do_get_score([{r1, _}, {r3, _}, {r3, _}, {r3, _}, {r2, _}]), do: {3, {r3, r2, r1}}
-  defp do_get_score([{r1, _}, {r2, _}, {r3, _}, {r3, _}, {r3, _}]), do: {3, {r3, r2, r1}}
-
-  # two_pair
-  defp do_get_score([{r2, _}, {r2, _}, {r3, _}, {r3, _}, {r1, _}]), do: {2, {r3, r2, r1}}
-  defp do_get_score([{r2, _}, {r2, _}, {r1, _}, {r3, _}, {r3, _}]), do: {2, {r3, r2, r1}}
-  defp do_get_score([{r1, _}, {r2, _}, {r2, _}, {r3, _}, {r3, _}]), do: {2, {r3, r2, r1}}
-
-  # one_pair
-  defp do_get_score([{r4, _}, {r4, _}, {r1, _}, {r2, _}, {r3, _}]), do: {1, {r4, r3, r2, r1}}
-  defp do_get_score([{r1, _}, {r4, _}, {r4, _}, {r2, _}, {r3, _}]), do: {1, {r4, r3, r2, r1}}
-  defp do_get_score([{r1, _}, {r2, _}, {r4, _}, {r4, _}, {r3, _}]), do: {1, {r4, r3, r2, r1}}
-  defp do_get_score([{r1, _}, {r2, _}, {r3, _}, {r4, _}, {r4, _}]), do: {1, {r4, r3, r2, r1}}
-
-  # high_card
-  defp do_get_score([{r1, _}, {r2, _}, {r3, _}, {r4, _}, {r5, _}]), do: {0, {r5, r4, r3, r2, r1}}
-
-  defp rank_to_integer("J"), do: 11
-  defp rank_to_integer("Q"), do: 12
-  defp rank_to_integer("K"), do: 13
-  defp rank_to_integer("A"), do: 14
-  defp rank_to_integer(rank), do: String.to_integer(rank)
+  defp category_score(frequencies, is_straight, is_flush)
+  defp category_score([{_, 1}, {_, 1}, {_, 1}, {_, 1}, {_, 1}], true, true), do: 8
+  defp category_score([{_, 4}, {_, 1}], false, false), do: 7
+  defp category_score([{_, 3}, {_, 2}], false, false), do: 6
+  defp category_score([{_, 1}, {_, 1}, {_, 1}, {_, 1}, {_, 1}], false, true), do: 5
+  defp category_score([{_, 1}, {_, 1}, {_, 1}, {_, 1}, {_, 1}], true, false), do: 4
+  defp category_score([{_, 3}, {_, 1}, {_, 1}], false, false), do: 3
+  defp category_score([{_, 2}, {_, 2}, {_, 1}], false, false), do: 2
+  defp category_score([{_, 2}, {_, 1}, {_, 1}, {_, 1}], false, false), do: 1
+  defp category_score([{_, 1}, {_, 1}, {_, 1}, {_, 1}, {_, 1}], false, false), do: 0
 end
