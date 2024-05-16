@@ -4,77 +4,55 @@ defmodule FoodChain do
   """
   @spec recite(start :: integer, stop :: integer) :: String.t()
   def recite(start, stop) do
-    Enum.map(start..stop//1, &[opening(&1), closing(&1)]) |> Enum.join("\n")
+    Enum.map(start..stop//1, &stanza/1) |> Enum.join("\n")
   end
 
-  defp closing(count) when count in 1..7 do
-    [
-      "She swallowed the cow to catch the goat.\n",
-      "She swallowed the goat to catch the dog.\n",
-      "She swallowed the dog to catch the cat.\n",
-      "She swallowed the cat to catch the bird.\n",
-      "She swallowed the bird to catch the spider that wriggled and jiggled and tickled inside her.\n",
-      "She swallowed the spider to catch the fly.\n",
-      "I don't know why she swallowed the fly. Perhaps she'll die.\n"
-    ]
-    |> Enum.take(-count)
+  defp stanza(index) do
+    [opening(index), middle(index), ending(index)] |> to_string()
   end
 
-  defp closing(8) do
-    ["She's dead, of course!\n"]
+  defp opening(index) do
+    "I know an old lady who swallowed a #{food(index)}.\n"
   end
 
-  defp opening(1) do
-    """
-    I know an old lady who swallowed a fly.
-    """
+  defp food(1), do: "fly"
+  defp food(2), do: "spider"
+  defp food(3), do: "bird"
+  defp food(4), do: "cat"
+  defp food(5), do: "dog"
+  defp food(6), do: "goat"
+  defp food(7), do: "cow"
+  defp food(8), do: "horse"
+
+  defp middle(1), do: ""
+  defp middle(2), do: "It wriggled and jiggled and tickled inside her.\n"
+  defp middle(3), do: "How absurd to swallow a bird!\n"
+  defp middle(4), do: "Imagine that, to swallow a cat!\n"
+  defp middle(5), do: "What a hog, to swallow a dog!\n"
+  defp middle(6), do: "Just opened her throat and swallowed a goat!\n"
+  defp middle(7), do: "I don't know how she swallowed a cow!\n"
+  defp middle(8), do: ""
+
+  defp ending(8) do
+    "She's dead, of course!\n"
   end
 
-  defp opening(2) do
-    """
-    I know an old lady who swallowed a spider.
-    It wriggled and jiggled and tickled inside her.
-    """
+  defp ending(index) when index in 1..7 do
+    index..1//-1
+    |> Enum.map(&food/1)
+    |> Enum.chunk_every(2, 1, Stream.cycle([nil]))
+    |> Enum.map(fn [curr, prev] -> reason(curr, prev) end)
   end
 
-  defp opening(3) do
-    """
-    I know an old lady who swallowed a bird.
-    How absurd to swallow a bird!
-    """
+  defp reason("fly", nil) do
+    "I don't know why she swallowed the fly. Perhaps she'll die.\n"
   end
 
-  defp opening(4) do
-    """
-    I know an old lady who swallowed a cat.
-    Imagine that, to swallow a cat!
-    """
+  defp reason("bird", "spider") do
+    reason("bird", "spider that wriggled and jiggled and tickled inside her")
   end
 
-  defp opening(5) do
-    """
-    I know an old lady who swallowed a dog.
-    What a hog, to swallow a dog!
-    """
-  end
-
-  defp opening(6) do
-    """
-    I know an old lady who swallowed a goat.
-    Just opened her throat and swallowed a goat!
-    """
-  end
-
-  defp opening(7) do
-    """
-    I know an old lady who swallowed a cow.
-    I don't know how she swallowed a cow!
-    """
-  end
-
-  defp opening(8) do
-    """
-    I know an old lady who swallowed a horse.
-    """
+  defp reason(curr, prev) do
+    "She swallowed the #{curr} to catch the #{prev}.\n"
   end
 end
