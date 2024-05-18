@@ -22,23 +22,13 @@ defmodule Transpose do
     lines = String.split(input, "\n")
     len = Enum.map(lines, &String.length/1) |> Enum.max()
 
-    reversed =
-      lines
-      |> Enum.map(&(String.pad_trailing(&1, len, " ") |> String.graphemes()))
-      |> Enum.zip_with(&to_string/1)
-      |> Enum.reverse()
-
-    {reversed, 0}
-    |> Stream.unfold(fn
-      {[], _} ->
-        nil
-
-      {[head | tail], prev_len} ->
-        text = String.trim_trailing(head)
-        curr_len = String.length(text) |> max(prev_len)
-        {String.pad_trailing(text, curr_len, " "), {tail, curr_len}}
+    lines
+    |> Enum.map(fn line ->
+      String.pad_trailing(line, len, "\0") |> String.graphemes()
     end)
-    |> Enum.reverse()
-    |> Enum.join("\n")
+    |> Enum.zip_with(&to_string/1)
+    |> Enum.map_join("\n", fn line ->
+      String.trim_trailing(line, "\0") |> String.replace("\0", " ")
+    end)
   end
 end
