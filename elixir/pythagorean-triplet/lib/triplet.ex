@@ -20,6 +20,10 @@ defmodule Triplet do
   """
   @spec pythagorean?([non_neg_integer]) :: boolean
   def pythagorean?([a, b, c]) do
+    pythagorean?(a, b, c)
+  end
+
+  defp pythagorean?(a, b, c) do
     a ** 2 + b ** 2 == c ** 2
   end
 
@@ -28,16 +32,19 @@ defmodule Triplet do
   """
   @spec generate(non_neg_integer) :: [list(non_neg_integer)]
   def generate(sum) do
-    cs = div(sum, 3)..div(sum, 2)
+    cs = div(sum, 3)..(div(sum, 2) - 1)
     count = ceil(Enum.count(cs) / System.schedulers_online())
 
-    Stream.chunk_every(cs, count, count, [])
-    |> Stream.map(fn cs ->
-      for c <- cs, b <- ceil((sum - c) / 2)..(sum - c - 1) do
-        [sum - c - b, b, c]
+    cs
+    |> Stream.chunk_every(count, count, [])
+    |> Task.async_stream(fn cs ->
+      for c <- cs,
+          b <- ceil((sum - c) / 2)..c,
+          a = sum - c - b,
+          pythagorean?(a, b, c) do
+        [a, b, c]
       end
     end)
-    |> Task.async_stream(&Enum.filter(&1, fn x -> pythagorean?(x) end))
     |> Stream.flat_map(&elem(&1, 1))
     |> Enum.sort()
   end
