@@ -11,10 +11,10 @@ defmodule PalindromeProducts do
     0..(cores - 1)
     |> Task.async_stream(fn index ->
       for x <- (min_factor + index)..max_factor//cores,
+          rem(x, 10) > 0,
           y <- x..max_factor//1,
           k = x * y,
-          digits = Integer.digits(k),
-          digits == Enum.reverse(digits) do
+          palindrome?(k) do
         {k, [x, y]}
       end
     end)
@@ -26,5 +26,16 @@ defmodule PalindromeProducts do
 
   def generate(_max_factor, _min_factor) do
     raise ArgumentError
+  end
+
+  defp palindrome?(n) do
+    exp = :math.log10(n) |> trunc()
+    do_palindrome?(n, 0, exp)
+  end
+
+  defp do_palindrome?(n, i, j) do
+    i >= j or
+      (div(n, 10 ** i) |> rem(10) == div(n, 10 ** j) |> rem(10) and
+         do_palindrome?(n, i + 1, j - 1))
   end
 end
