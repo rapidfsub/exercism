@@ -19,19 +19,19 @@ defmodule ConnectTest do
     assert Connect.result_for(board) == :none
   end
 
-  @tag :pending
+  # @tag :pending
   test "1x1 board with black stone" do
     board = ["X"]
     assert Connect.result_for(board) == :black
   end
 
-  @tag :pending
+  # @tag :pending
   test "1x1 board with white stone" do
     board = ["O"]
     assert Connect.result_for(board) == :white
   end
 
-  @tag :pending
+  # @tag :pending
   test "only edges does not make a winner" do
     board =
       remove_spaces([
@@ -44,7 +44,7 @@ defmodule ConnectTest do
     assert Connect.result_for(board) == :none
   end
 
-  @tag :pending
+  # @tag :pending
   test "illegal diagonal does not make a winner" do
     board =
       remove_spaces([
@@ -58,7 +58,7 @@ defmodule ConnectTest do
     assert Connect.result_for(board) == :none
   end
 
-  @tag :pending
+  # @tag :pending
   test "nobody wins crossing adjacent angles" do
     board =
       remove_spaces([
@@ -72,7 +72,7 @@ defmodule ConnectTest do
     assert Connect.result_for(board) == :none
   end
 
-  @tag :pending
+  # @tag :pending
   test "black wins crossing from left to right" do
     board =
       remove_spaces([
@@ -86,7 +86,7 @@ defmodule ConnectTest do
     assert Connect.result_for(board) == :black
   end
 
-  @tag :pending
+  # @tag :pending
   test "white wins crossing from top to bottom" do
     board =
       remove_spaces([
@@ -100,7 +100,7 @@ defmodule ConnectTest do
     assert Connect.result_for(board) == :white
   end
 
-  @tag :pending
+  # @tag :pending
   test "black wins using a convoluted path" do
     board =
       remove_spaces([
@@ -114,7 +114,7 @@ defmodule ConnectTest do
     assert Connect.result_for(board) == :black
   end
 
-  @tag :pending
+  # @tag :pending
   test "black wins using a spiral path" do
     board =
       remove_spaces([
