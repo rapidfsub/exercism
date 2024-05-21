@@ -5,26 +5,13 @@ defmodule RailFenceCipher do
   Encode a given plaintext to the corresponding rail fence ciphertext
   """
   @spec encode(String.t(), pos_integer) :: String.t()
-  def encode(str, rails) when 1 < rails do
-    period = get_period(rails)
-
-    str
-    |> String.graphemes()
-    |> Enum.chunk_every(period, period, Stream.cycle([nil]))
-    |> Enum.map(fn chunk ->
-      [lhs, rhs] = Enum.chunk_every(chunk, rails - 1) |> Enum.map(&List.insert_at(&1, -1, nil))
-      [lhs, Enum.reverse(rhs)] |> Enum.zip_with(&Enum.join/1)
-    end)
-    |> Enum.zip_with(&Function.identity/1)
-    |> Enum.join()
-  end
-
-  def encode(str, _rails) do
-    str
-  end
-
-  defp get_period(rails) do
-    (rails - 1) * 2
+  def encode(str, rails) do
+    Stream.concat(0..(rails - 1)//1, (rails - 2)..1//-1)
+    |> Stream.cycle()
+    |> Enum.zip(String.graphemes(str))
+    |> Enum.reduce(%{}, fn {i, v}, acc -> Map.update(acc, i, [v], &[v | &1]) end)
+    |> Enum.sort_by(&elem(&1, 0))
+    |> Enum.map_join(&(elem(&1, 1) |> Enum.reverse()))
   end
 
   @doc """
@@ -70,5 +57,9 @@ defmodule RailFenceCipher do
     |> Enum.reduce(result, fn i, acc ->
       List.update_at(acc, i, &(&1 + 1))
     end)
+  end
+
+  defp get_period(rails) do
+    (rails - 1) * 2
   end
 end
