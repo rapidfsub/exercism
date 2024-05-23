@@ -6,6 +6,10 @@ defmodule WordSearch do
             from: %{row: integer, column: integer},
             to: %{row: integer, column: integer}
           }
+
+    def new({r1, c1}, {r2, c2}) do
+      %__MODULE__{from: %{row: r1, column: c1}, to: %{row: r2, column: c2}}
+    end
   end
 
   @doc """
@@ -41,10 +45,10 @@ defmodule WordSearch do
   end
 
   @directions for dr <- -1..1//1, dc <- -1..1//1, {dr, dc} != {0, 0}, do: {dr, dc}
-  defp do_get_location(letters, matrix, {r1, c1} = from) do
+  defp do_get_location(letters, matrix, from) do
     case Enum.find_value(@directions, &get_to(letters, matrix, from, &1)) do
       nil -> nil
-      {r2, c2} -> %Location{from: %{row: r1, column: c1}, to: %{row: r2, column: c2}}
+      to -> Location.new(from, to)
     end
   end
 
