@@ -3,23 +3,15 @@ defmodule KillerSudokuHelper do
   Return the possible combinations of `size` distinct numbers from 1-9 excluding `exclude` that sum up to `sum`.
   """
   @spec combinations(cage :: %{exclude: [integer], size: integer, sum: integer}) :: [[integer]]
-  def combinations(%{exclude: exclude, size: size, sum: sum}) do
-    for nums <- cages(size), Enum.sum(nums) == sum, Enum.all?(nums, &(&1 not in exclude)) do
-      nums
-    end
+  def combinations(cage) do
+    ns = Enum.filter(9..1//-1, &(&1 not in cage.exclude))
+    permutation([], [], 0, cage.size, ns) |> Enum.filter(&(Enum.sum(&1) == cage.sum))
   end
 
-  defp cages(n) do
-    do_cages(n) |> Enum.map(&Enum.reverse/1)
-  end
+  defp permutation(acc, xs, size, size, _ns), do: [xs | acc]
+  defp permutation(acc, _xs, _len, _size, []), do: acc
 
-  defp do_cages(1) do
-    Enum.map(1..9, &List.wrap/1)
-  end
-
-  defp do_cages(size) do
-    for [x | _] = nums <- do_cages(size - 1), y <- (x + 1)..9//1 do
-      [y | nums]
-    end
+  defp permutation(acc, xs, len, size, [n | ns]) do
+    permutation(acc, xs, len, size, ns) |> permutation([n | xs], len + 1, size, ns)
   end
 end
