@@ -21,7 +21,7 @@ defmodule Markdown do
 
   defp process(t) do
     cond do
-      t =~ ~R/^#{1,6}[^#]/ -> parse_header_md(t)
+      t =~ ~r/^\#{1,6}[^#]/ -> parse_header_md(t)
       t =~ ~r/^\*/ -> parse_list_md(t)
       true -> parse_paragraph_tag(t)
     end
@@ -80,12 +80,6 @@ defmodule Markdown do
   end
 
   defp patch(l) do
-    l
-    |> do_patch("<li>", "<ul><li>")
-    |> do_patch(String.reverse("</li>"), String.reverse("</li></ul>"))
-  end
-
-  defp do_patch(l, pattern, replacement) do
-    String.replace(l, pattern, replacement, global: false) |> String.reverse()
+    String.replace(l, ~r/(<li>.+<\/li>)/, &enclose(&1, "ul"))
   end
 end
