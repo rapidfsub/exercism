@@ -114,21 +114,31 @@ defmodule SgfParsing do
   end
 
   defp parse_nodes(tokens) do
-    do_parse_nodes(tokens, [])
+    do_parse_nodes(tokens, [], [])
   end
 
-  defp do_parse_nodes([], []) do
-    {:ok, []}
-  end
-
-  defp do_parse_nodes(tokens, [{:term, ")"} | _] = acc) do
+  defp do_parse_nodes(tokens, [{:term, ")"} | _] = acc, []) do
     with {:ok, node} <- Enum.reverse(acc) |> parse_tree(),
-         {:ok, nodes} <- do_parse_nodes(tokens, []) do
+         {:ok, nodes} <- do_parse_nodes(tokens, [], []) do
       {:ok, [node | nodes]}
     end
   end
 
-  defp do_parse_nodes([token | tokens], acc) do
-    do_parse_nodes(tokens, [token | acc])
+  defp do_parse_nodes([{:term, "("} = paren | tokens], acc, parens) do
+    do_parse_nodes(tokens, [paren | acc], [paren | parens])
+  end
+
+  defp do_parse_nodes([{:term, ")"} = paren | tokens], acc, parens) do
+    case parens do
+      [{:term, "("} | parens] -> do_parse_nodes(tokens, [paren | acc], parens)
+    end
+  end
+
+  defp do_parse_nodes([token | tokens], acc, parens) do
+    do_parse_nodes(tokens, [token | acc], parens)
+  end
+
+  defp do_parse_nodes([], [], []) do
+    {:ok, []}
   end
 end
