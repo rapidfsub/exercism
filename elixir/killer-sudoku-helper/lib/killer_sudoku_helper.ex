@@ -5,13 +5,13 @@ defmodule KillerSudokuHelper do
   @spec combinations(cage :: %{exclude: [integer], size: integer, sum: integer}) :: [[integer]]
   def combinations(cage) do
     ns = Enum.filter(9..1//-1, &(&1 not in cage.exclude))
-    permutation([], [], 0, cage.size, ns) |> Enum.filter(&(Enum.sum(&1) == cage.sum))
+    permutation([], [], cage.size, ns) |> Enum.filter(&(Enum.sum(&1) == cage.sum))
   end
 
-  defp permutation(acc, xs, size, size, _ns), do: [xs | acc]
-  defp permutation(acc, _xs, _len, _size, []), do: acc
+  defp permutation(acc, xs, 0, _ns), do: [xs | acc]
+  defp permutation(acc, _xs, _size, []), do: acc
 
-  defp permutation(acc, xs, len, size, [n | ns]) do
-    permutation(acc, xs, len, size, ns) |> permutation([n | xs], len + 1, size, ns)
+  defp permutation(acc, xs, size, [n | ns]) do
+    permutation(acc, xs, size, ns) |> permutation([n | xs], size - 1, ns)
   end
 end
