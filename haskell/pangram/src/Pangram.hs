@@ -1,17 +1,9 @@
 module Pangram (isPangram) where
 
-import Data.Char as Char (isAlpha, isAscii, toLower)
-import Data.Function ((&))
-import Data.Set as Set (fromList, size)
+import Data.Char as Char (toLower)
+import Data.Set as Set (fromList, member)
 
 isPangram :: String -> Bool
 isPangram text =
-  text
-    & filter Char.isAscii
-    & filter Char.isAlpha
-    & map Char.toLower
-    & Set.fromList
-    & Set.size
-    & (==) alphabetLen
-  where
-    alphabetLen = length ['a', 'b' .. 'z']
+  let letters = Set.fromList $ map Char.toLower text
+   in all (\x -> Set.member x letters) ['a', 'b' .. 'z']
