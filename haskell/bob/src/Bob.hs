@@ -1,15 +1,9 @@
+{-# LANGUAGE ImportQualifiedPost #-}
 {-# LANGUAGE OverloadedStrings #-}
 
 module Bob (responseFor) where
 
-import Data.Text as T
-  ( empty,
-    isSuffixOf,
-    pack,
-    strip,
-    toLower,
-    toUpper,
-  )
+import Data.Text qualified as T
 
 responseFor :: String -> String
 responseFor xs
