@@ -3,17 +3,18 @@
 pub const ComputationError = error{IllegalArgument};
 
 pub fn steps(number: usize) ComputationError!usize {
-    if (number > 1) {
-        if (number % 2 == 0) {
-            return 1 + try steps(number / 2);
-        } else {
-            return 1 + try steps(3 * number + 1);
+    if (number > 0) {
+        var value = number;
+        var result: usize = 0;
+        while (value > 1) : (result += 1) {
+            if (value % 2 == 0) {
+                value /= 2;
+            } else {
+                value = 3 * value + 1;
+            }
         }
+        return result;
     } else {
-        if (number > 0) {
-            return 0;
-        } else {
-            return ComputationError.IllegalArgument;
-        }
+        return ComputationError.IllegalArgument;
     }
 }
