@@ -1,4 +1,3 @@
 pub fn isLeapYear(year: u32) bool {
-    _ = year;
-    @compileError("please implement the isLeapYear function");
+    return year % 4 == 0 and (year % 100 != 0 or year % 400 == 0);
 }
