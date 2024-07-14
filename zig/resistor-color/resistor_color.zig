@@ -1,3 +1,5 @@
+const std = @import("std");
+
 pub const ColorBand = enum(usize) {
     black = 0,
     brown = 1,
@@ -16,16 +18,5 @@ pub fn colorCode(color: ColorBand) usize {
 }
 
 pub fn colors() []const ColorBand {
-    return &[_]ColorBand{
-        .black,
-        .brown,
-        .red,
-        .orange,
-        .yellow,
-        .green,
-        .blue,
-        .violet,
-        .grey,
-        .white,
-    };
+    return std.enums.values(ColorBand);
 }
