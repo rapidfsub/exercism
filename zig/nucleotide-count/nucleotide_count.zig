@@ -15,21 +15,11 @@ pub fn countNucleotides(s: []const u8) NucleotideError!Counts {
     var counts = Counts.init();
     for (s) |letter| {
         switch (letter) {
-            'A' => {
-                counts.a += 1;
-            },
-            'C' => {
-                counts.c += 1;
-            },
-            'G' => {
-                counts.g += 1;
-            },
-            'T' => {
-                counts.t += 1;
-            },
-            else => {
-                return NucleotideError.Invalid;
-            },
+            'A' => counts.a += 1,
+            'C' => counts.c += 1,
+            'G' => counts.g += 1,
+            'T' => counts.t += 1,
+            else => return NucleotideError.Invalid,
         }
     }
     return counts;
