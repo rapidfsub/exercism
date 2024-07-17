@@ -3,15 +3,20 @@ pub const QueenError = error{
 };
 
 pub const Queen = struct {
+    row: i8,
+    col: i8,
+
     pub fn init(row: i8, col: i8) QueenError!Queen {
-        _ = row;
-        _ = col;
-        @compileError("please implement the init method");
+        if (row >= 0 and row < 8 and col >= 0 and col < 8) {
+            return Queen{ .row = row, .col = col };
+        } else {
+            return QueenError.InitializationFailure;
+        }
     }
 
     pub fn canAttack(self: Queen, other: Queen) QueenError!bool {
-        _ = self;
-        _ = other;
-        @compileError("please implement the canAttack method");
+        return self.row == other.row or
+            self.col == other.col or
+            @abs(self.row - other.row) == @abs(self.col - other.col);
     }
 };
