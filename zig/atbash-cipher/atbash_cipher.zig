@@ -1,4 +1,5 @@
 const std = @import("std");
+const ArrayList = std.ArrayList;
 const ascii = std.ascii;
 const mem = std.mem;
 
@@ -13,30 +14,20 @@ pub fn decode(allocator: mem.Allocator, s: []const u8) mem.Allocator.Error![]u8 
 }
 
 fn transform(allocator: mem.Allocator, s: []const u8, comptime encoding: bool) mem.Allocator.Error![]u8 {
-    var buffer = try allocator.alloc(u8, s.len * 2);
-    defer allocator.free(buffer);
-
-    var i: usize = 0;
+    var result = ArrayList(u8).init(allocator);
     for (s) |letter| {
         if (ascii.isAlphanumeric(letter)) {
             inline while (encoding) {
-                if (@rem(i, 6) == 5) {
-                    buffer[i] = ' ';
-                    i += 1;
+                if (@rem(result.items.len, 6) == 5) {
+                    try result.append(' ');
                 }
                 break;
             }
-
-            if ((letter >= '0' and letter <= '9')) {
-                buffer[i] = letter;
-            } else {
-                buffer[i] = 'z' - ascii.toLower(letter) + 'a';
-            }
-            i += 1;
+            try result.append(switch (letter) {
+                '0'...'9' => letter,
+                else => 'z' - ascii.toLower(letter) + 'a',
+            });
         }
     }
-
-    const result = try allocator.alloc(u8, i);
-    mem.copyForwards(u8, result, buffer[0..i]);
-    return result;
+    return result.toOwnedSlice();
 }
