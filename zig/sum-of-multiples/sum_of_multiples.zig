@@ -3,7 +3,14 @@ const mem = std.mem;
 
 pub fn sum(allocator: mem.Allocator, factors: []const u32, limit: u32) !u64 {
     _ = allocator;
-    _ = factors;
-    _ = limit;
-    @compileError("please implement the sum function");
+    var result: u64 = 0;
+    for (1..limit) |n| {
+        for (factors) |factor| {
+            if (factor > 0 and @rem(n, factor) == 0) {
+                result += n;
+                break;
+            }
+        }
+    }
+    return result;
 }
