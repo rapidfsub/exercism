@@ -36,10 +36,12 @@ pub fn convert(
     var result = ArrayList(u32).init(allocator);
     defer result.deinit();
     while (value > 0) : (value /= output_base) {
-        try result.insert(0, @rem(value, output_base));
+        try result.append(@rem(value, output_base));
     }
     if (result.items.len < 1) {
         try result.append(0);
+    } else {
+        mem.reverse(u32, result.items);
     }
     return result.toOwnedSlice();
 }
