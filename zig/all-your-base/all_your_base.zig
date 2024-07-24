@@ -33,20 +33,12 @@ pub fn convert(
         }
     }
 
-    var buffer = ArrayList(u32).init(allocator);
-    defer buffer.deinit();
-    while (value > 0) : (value /= output_base) {
-        try buffer.append(@rem(value, output_base));
-    }
-
     var result = ArrayList(u32).init(allocator);
     defer result.deinit();
-    if (buffer.items.len > 0) {
-        var i = buffer.items.len;
-        while (i > 0) : (i -= 1) {
-            try result.append(buffer.items[i - 1]);
-        }
-    } else {
+    while (value > 0) : (value /= output_base) {
+        try result.insert(0, @rem(value, output_base));
+    }
+    if (result.items.len < 1) {
         try result.append(0);
     }
     return result.toOwnedSlice();
