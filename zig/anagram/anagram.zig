@@ -9,29 +9,22 @@ pub fn detectAnagrams(
     word: []const u8,
     candidates: []const []const u8,
 ) !std.BufSet {
-    var tally = [_]u32{0} ** 26;
-    for (word) |letter| {
-        if (ascii.isAlphabetic(letter)) {
-            tally[ascii.toLower(letter) - 'a'] += 1;
-        }
-    }
-
+    const tally = getTally(word);
     var result = std.BufSet.init(allocator);
     for (candidates) |candid| {
-        var tc = [_]u32{0} ** 26;
-        for (candid) |letter| {
-            if (ascii.isAlphabetic(letter)) {
-                tc[ascii.toLower(letter) - 'a'] += 1;
-            }
+        const tc = getTally(candid);
+        if (mem.eql(u32, &tc, &tally) and !ascii.eqlIgnoreCase(candid, word)) {
+            try result.insert(candid);
         }
+    }
+    return result;
+}
 
-        if (mem.eql(u32, &tc, &tally)) {
-            for (candid, word) |lhs, rhs| {
-                if (ascii.toLower(lhs) != ascii.toLower(rhs)) {
-                    try result.insert(candid);
-                    break;
-                }
-            }
+fn getTally(word: []const u8) [26]u32 {
+    var result = [_]u32{0} ** 26;
+    for (word) |letter| {
+        if (ascii.isAlphabetic(letter)) {
+            result[ascii.toLower(letter) - 'a'] += 1;
         }
     }
     return result;
