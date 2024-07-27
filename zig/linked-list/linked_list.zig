@@ -4,6 +4,29 @@ pub fn LinkedList(comptime T: type) type {
             prev: ?*@This() = null,
             next: ?*@This() = null,
             data: T,
+
+            fn connectNext(this: *Node, other: *Node) void {
+                this.next = other;
+                other.prev = this;
+            }
+
+            fn disconnectNext(this: *Node) void {
+                if (this.next != null) {
+                    this.next.?.prev = null;
+                    this.next = null;
+                }
+            }
+
+            fn bridge(this: *Node) void {
+                if (this.prev != null) {
+                    this.prev.?.next = this.next;
+                }
+                if (this.next != null) {
+                    this.next.?.prev = this.prev;
+                }
+                this.prev = null;
+                this.next = null;
+            }
         };
 
         first: ?*Node = null,
@@ -11,93 +34,73 @@ pub fn LinkedList(comptime T: type) type {
         len: u32 = 0,
 
         pub fn push(this: *@This(), node: *Node) void {
-            this.len += 1;
             if (this.last == null) {
                 this.first = node;
-                this.last = node;
             } else {
-                node.prev = this.last;
-                this.last.?.next = node;
-                this.last = node;
+                this.last.?.connectNext(node);
             }
+            this.last = node;
+            this.len += 1;
         }
 
         pub fn pop(this: *@This()) ?*Node {
             if (this.last == null) {
                 return null;
-            } else {
-                this.len -= 1;
-                var result = this.last.?;
-                if (this.len > 0) {
-                    if (result.prev != null) {
-                        result.prev.?.next = null;
-                    }
-                    this.last = result.prev;
-                    result.prev = null;
-                } else {
-                    this.first = null;
-                    this.last = null;
-                }
-                return result;
             }
+
+            const result = this.last.?;
+            this.last = result.prev;
+            if (result.prev == null) {
+                this.first = null;
+            } else {
+                result.prev.?.disconnectNext();
+            }
+            this.len -= 1;
+            return result;
         }
 
         pub fn shift(this: *@This()) ?*Node {
             if (this.first == null) {
                 return null;
-            } else {
-                this.len -= 1;
-                var result = this.first.?;
-                if (this.len > 0) {
-                    if (result.next != null) {
-                        result.next.?.prev = null;
-                    }
-                    this.first = result.next;
-                    result.next = null;
-                } else {
-                    this.first = null;
-                    this.last = null;
-                }
-                return result;
             }
+
+            const result = this.first.?;
+            this.first = result.next;
+            if (result.next == null) {
+                this.last = null;
+            } else {
+                result.disconnectNext();
+            }
+            this.len -= 1;
+            return result;
         }
 
         pub fn unshift(this: *@This(), node: *Node) void {
-            this.len += 1;
             if (this.first == null) {
-                this.first = node;
                 this.last = node;
             } else {
-                node.next = this.first;
-                this.first.?.prev = node;
-                this.first = node;
+                node.connectNext(this.first.?);
             }
+            this.first = node;
+            this.len += 1;
         }
 
         pub fn delete(this: *@This(), node: *Node) void {
             var curr = this.first;
             while (curr != null) : (curr = curr.?.next) {
-                if (curr == node) {
-                    this.len -= 1;
-                    if (this.len > 0) {
-                        if (node.next == null) {
-                            this.last = node.prev;
-                        } else {
-                            node.next.?.prev = node.prev;
-                        }
-                        if (node.prev == null) {
-                            this.first = node.next;
-                        } else {
-                            node.prev.?.next = node.next;
-                        }
-                        node.prev = null;
-                        node.next = null;
-                    } else {
-                        this.first = null;
-                        this.last = null;
-                    }
-                    break;
+                if (curr != node) {
+                    continue;
                 }
+
+                if (this.first == node) {
+                    this.first = node.next;
+                }
+                if (this.last == node) {
+                    this.last = node.prev;
+                }
+                node.bridge();
+                this.len -= 1;
+                break;
             }
         }
     };
