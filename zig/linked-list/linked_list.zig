@@ -87,20 +87,18 @@ pub fn LinkedList(comptime T: type) type {
 
         pub fn delete(this: *@This(), node: *Node) void {
             var curr = this.first;
-            while (curr != null) : (curr = curr.?.next) {
-                if (curr != node) {
-                    continue;
+            while (curr) |x| : (curr = x.next) {
+                if (x.data == node.data) {
+                    if (this.first == x) {
+                        this.first = x.next;
+                    }
+                    if (this.last == x) {
+                        this.last = x.prev;
+                    }
+                    x.bridge();
+                    this.len -= 1;
+                    break;
                 }
-
-                if (this.first == node) {
-                    this.first = node.next;
-                }
-                if (this.last == node) {
-                    this.last = node.prev;
-                }
-                node.bridge();
-                this.len -= 1;
-                break;
             }
         }
     };
