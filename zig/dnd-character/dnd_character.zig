@@ -1,10 +1,22 @@
+const std = @import("std");
+const time = std.time;
+const Random = std.Random;
+
 pub fn modifier(score: i8) i8 {
-    _ = score;
-    @compileError("please implement the modifier function");
+    return @divFloor(score - 10, 2);
 }
 
 pub fn ability() i8 {
-    @compileError("please implement the ability function");
+    var prng = Random.DefaultPrng.init(@as(u64, @intCast(time.timestamp())));
+    var rand = prng.random();
+    var sum: i8 = 0;
+    var min: i8 = 7;
+    for (0..4) |_| {
+        const die = rand.intRangeAtMost(i8, 1, 6);
+        sum += die;
+        min = @min(min, die);
+    }
+    return sum - min;
 }
 
 pub const Character = struct {
@@ -17,6 +29,15 @@ pub const Character = struct {
     hitpoints: i8,
 
     pub fn init() Character {
-        @compileError("please implement the init method");
+        const constitution = ability();
+        return Character{
+            .strength = ability(),
+            .dexterity = ability(),
+            .constitution = constitution,
+            .intelligence = ability(),
+            .wisdom = ability(),
+            .charisma = ability(),
+            .hitpoints = modifier(constitution) + 10,
+        };
     }
 };
